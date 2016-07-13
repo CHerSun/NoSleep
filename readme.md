@@ -16,5 +16,5 @@ NoSleep works through calling to SetThreadExecutionState resetting display/idle 
 ## Icon
 Icon was taken from "http://www.iconarchive.com/show/kappu-icons-by-dunedhel/Cup-3-coffee-icon.html". Icon is disributed per Creative Commons (CC) non-commercial license.
 
-## License
-Free for non-commercial use (imposed by icon). No liability.
+## Code License
+Completely free, use as you will. No liability. 
