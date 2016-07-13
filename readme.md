@@ -12,3 +12,9 @@ Download **NoSleep.exe** from **"Compiled binary"** folder. Then just run and fo
 
 ## How it works
 NoSleep works through calling to SetThreadExecutionState resetting display/idle Windows timers every 10 seconds. Should use no CPU and around 6-7 MBs of RAM. Icons are taking up 166 KB in compiled binary, the rest is the code (~10 KB).
+
+## Icon
+Icon was taken from "http://www.iconarchive.com/show/kappu-icons-by-dunedhel/Cup-3-coffee-icon.html". Icon is disributed per Creative Commons (CC) non-commercial license.
+
+## License
+Free for non-commercial use (imposed by icon). No liability.
