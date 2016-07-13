@@ -33,7 +33,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>Resources\Dunedhel-Kappu-Cup-3-coffee - 128.ico</ApplicationIcon>
+    <ApplicationIcon>Martin-Berube-Food-Coffee-128.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -76,9 +76,7 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Resources\Dunedhel-Kappu-Cup-3-coffee - 128.ico" />
-    <Content Include="Resources\Dunedhel-Kappu-Cup-3-coffee.ico" />
-    <None Include="Resources\Dunedhel-Kappu-Cup-3-coffee - 32.ico" />
+    <Content Include="Martin-Berube-Food-Coffee-128.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
