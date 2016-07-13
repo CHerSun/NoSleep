@@ -5,7 +5,7 @@
 NoSleep utility prevents Windows OS from going into ScreenSaver / Sleep / ScreenLock modes. It's meant for those cases where user cannot change settings due to corporate-enforced policy.
 
 ## Usage
-Just run and forget. It will sit in tray and work. If you wish to close the program - right-click tray icon and select "Close".
+Download **NoSleep.exe** from **"Compiled binary"** folder. Then just run and forget. It will sit in tray and work. If you wish to close the program - right-click tray icon and select "Close".
 
 ## Requirements
 .NET 4.0 client profile
