@@ -1,10 +1,12 @@
 # NoSleep windows utility
 *13 July 2016*
 
-NoSleep utility prevents Windows OS from automatically going into ScreenSaver / Sleep / ScreenLock modes. It's meant for those cases where user cannot change settings due to corporate-enforced policy.
+NoSleep utility prevents Windows OS from automatically going into ScreenSaver / Sleep / ScreenLock modes. It's meant for those cases where user cannot change settings (due to corporate-enforced policy, for example). Inspired by Linux Caffeine.
 
 ## Usage
-Download **NoSleep.exe** from **"Compiled binary"** folder. Then just run and forget. It will sit in tray and work. If you wish to close the program - right-click tray icon and select "Close".
+Download **NoSleep.exe** from **"Compiled binary"** folder. Then just run and forget. You can also add shortcut to NoSleep to your StartUp items for NoSleep to start on user login. While active NoSleep will sit in Windows tray and prevent Windows from blocking.
+
+If you wish to stop it - close the program - right-click tray icon and select "Close".
 
 ## Requirements
 .NET 4.0 (client profile)
