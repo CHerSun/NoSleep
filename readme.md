@@ -3,7 +3,7 @@
 
 NoSleep utility prevents Windows OS from automatically going into ScreenSaver / Sleep / ScreenLock modes. It's meant for those cases where user cannot change settings (due to corporate-enforced policy, for example). Inspired by Linux Caffeine.
 
-NOTE: Windows PowerToys now has PowerToys.Awake tool which does the same thing + has a context menu with options.
+> NOTE: Windows PowerToys now has PowerToys.Awake tool which does the same thing + has a context menu with options.
 
 ## Usage
 Download **NoSleep.exe** from **"Compiled binary"** folder. Then just run and forget. You can also add shortcut to NoSleep to your StartUp items for NoSleep to start on user login. While active NoSleep will sit in Windows tray and prevent Windows from blocking.
