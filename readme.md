@@ -1,9 +1,7 @@
 # NoSleep windows utility
-*13 July 2016*
+NoSleep is a tool that prevents Windows OS from automatically going into ScreenSaver / Sleep / Lock modes. It's meant for those cases where user cannot change settings (due to corporate-enforced policy, for example). Inspired by Linux Caffeine.
 
-NoSleep utility prevents Windows OS from automatically going into ScreenSaver / Sleep / ScreenLock modes. It's meant for those cases where user cannot change settings (due to corporate-enforced policy, for example). Inspired by Linux Caffeine.
-
-> NOTE: Windows PowerToys now has PowerToys.Awake tool which does the same thing + has a context menu with options.
+> NOTE: Windows PowerToys now has PowerToys.Awake tool which does the same thing + has a context menu with options. Could require admin permissions though.
 
 ## Usage
 Download **NoSleep.exe** from **"Compiled binary"** folder. Then just run and forget. You can also add shortcut to NoSleep to your StartUp items for NoSleep to start on user login. While active NoSleep will sit in Windows tray and prevent Windows from blocking.
@@ -11,7 +9,7 @@ Download **NoSleep.exe** from **"Compiled binary"** folder. Then just run and fo
 If you wish to stop it - close the program - right-click tray icon and select "Close".
 
 ## Requirements
-.NET 4.0 (client profile)
+.NET 4.0 (client profile) or later (any 4.x.x should work)
 
 ## How it works
 NoSleep works through calling to SetThreadExecutionState resetting display/idle Windows timers every 10 seconds. Should use no CPU and around 6-7 MBs of RAM. Icons are taking up 166 KB in compiled binary, the rest is the code (~10 KB).
@@ -22,4 +20,4 @@ Icon was taken from http://www.iconarchive.com/show/food-icons-by-martin-berube/
 Artist: Martin Berube (thanks, Martin!)
 
 ## License
-Completely free, use as you will. No liability. 
+The Unlicense
