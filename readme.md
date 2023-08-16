@@ -1,18 +1,24 @@
 # NoSleep windows utility
 NoSleep is a tool that prevents Windows OS from automatically going into ScreenSaver / Sleep / Lock modes. It's meant for those cases where user cannot change settings (due to corporate-enforced policy, for example). Inspired by Linux Caffeine.
 
-> NOTE: Windows PowerToys now has PowerToys.Awake tool which does the same thing + has a context menu with options. Could require admin permissions though.
+> NOTE: Windows PowerToys now has PowerToys.Awake tool which does the same thing. It could require admin permissions though, also PowerToys are quite large. NoSleep aims to be as minimal as possible with no extra permissions required.
 
 ## Usage
-Download **NoSleep.exe** from **"Compiled binary"** folder. Then just run and forget. You can also add shortcut to NoSleep to your StartUp items for NoSleep to start on user login. While active NoSleep will sit in Windows tray and prevent Windows from blocking.
+Download **NoSleep.exe** from (the latest release)[https://github.com/CHerSun/NoSleep/releases/latest]. Save it anywhere you like. Then just run it and forget. While active NoSleep will sit in Windows tray and prevent Windows from blocking.
 
-If you wish to stop it - close the program - right-click tray icon and select "Close".
+You can also enable Autostart from context menu or manually add shortcut to NoSleep to your StartUp items for NoSleep to start on your login. 
+
+You can click tray icon (or toggle Enabled context menu item) to toggle NoSleep state.
+
+If you wish to completely stop it - close the program - right-click tray icon and select "Close".
 
 ## Requirements
-.NET 4.0 (client profile) or later (any 4.x.x should work)
+.NET 4.8
+
+> Previously NoSleep was targeting .NET 4.0 (client profile). If you encouner problems related to this requirements change - please create an (issue)[https://github.com/CHerSun/NoSleep/issues]
 
 ## How it works
-NoSleep works through calling to SetThreadExecutionState resetting display/idle Windows timers every 10 seconds. Should use no CPU and around 6-7 MBs of RAM. Icons are taking up 166 KB in compiled binary, the rest is the code (~10 KB).
+NoSleep works through calling to SetThreadExecutionState resetting display/idle Windows timers every 10 seconds. Should use no CPU and around 6-7 MBs of RAM. Icons are taking up ~180 KB in compiled binary, the rest is the code (~10 KB).
 
 ## Icons
 
