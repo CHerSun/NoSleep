@@ -14,10 +14,12 @@ If you wish to stop it - close the program - right-click tray icon and select "C
 ## How it works
 NoSleep works through calling to SetThreadExecutionState resetting display/idle Windows timers every 10 seconds. Should use no CPU and around 6-7 MBs of RAM. Icons are taking up 166 KB in compiled binary, the rest is the code (~10 KB).
 
-## Icon
-Icon was taken from http://www.iconarchive.com/show/food-icons-by-martin-berube/coffee-icon.html. Icon is disributed as freeware. 
+## Icons
 
-Artist: Martin Berube (thanks, Martin!)
+* Coffee icon (Active) was taken from https://www.iconarchive.com/show/food-icons-by-martin-berube/coffee-icon.html. Icon is disributed as freeware. Designer: (Martin Berube)[https://www.iconarchive.com/artist/martin-berube.html]
+* Sleep icon (Inactive) was taken from https://www.iconarchive.com/show/material-icons-by-pictogrammers/sleep-icon.html. License: Apache 2.0 (Open Source). Designer: (Pictogrammers Team)[https://www.iconarchive.com/artist/pictogrammers.html]
+
+Thanks for icons!
 
 ## License
 The Unlicense

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Windows.Forms;
 
 namespace NoSleep
@@ -11,9 +12,18 @@ namespace NoSleep
         [STAThread]
         static void Main()
         {
-            Application.EnableVisualStyles();
-            Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new TrayIcon());
+            using (Mutex mutex = new Mutex(false, TrayIcon.AppGuid))
+            {
+                if (!mutex.WaitOne(0, false))
+                {
+                    MessageBox.Show($"{TrayIcon.AppName} instance is already running.", TrayIcon.AppName, MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    return;
+                }
+
+                Application.EnableVisualStyles();
+                Application.SetCompatibleTextRenderingDefault(false);
+                Application.Run(new TrayIcon());
+            }
         }
     }
 }
