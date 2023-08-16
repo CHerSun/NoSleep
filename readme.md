@@ -15,7 +15,7 @@ If you wish to completely stop it - close the program - right-click tray icon an
 ## Requirements
 .NET 4.8
 
-> Previously NoSleep was targeting .NET 4.0 (client profile). If you encouner problems related to this requirements change - please create an [issue](https://github.com/CHerSun/NoSleep/issues)
+> Previously NoSleep was targeting .NET 4.0 (client profile). If you encounter problems related to this requirements change - please create an [issue](https://github.com/CHerSun/NoSleep/issues)
 
 ## How it works
 NoSleep works through calling to SetThreadExecutionState resetting display/idle Windows timers every 10 seconds. Should use no CPU and around 6-7 MBs of RAM. Icons are taking up ~180 KB in compiled binary, the rest is the code (~10 KB).
