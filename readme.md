@@ -15,11 +15,11 @@ If you wish to completely stop it - close the program - right-click tray icon an
 
 Options explanation:
 
-| Enabled | Keep screen On | System | Display |
-|---------|----------------|--------|---------|
-| On      | On             | Sleep is prevented | Always on |
-| On      | Off            | Sleep is prevented | Can go off |
-| Off     | doesn't matter | Usual behavior, can sleep, if configured | Can go off |
+| `Enabled`  | `Keep screen On` | System behavior | Display behavior |
+|----------|----------------|--------|---------|
+| ✅ `On`  | ✅ `On`             | Sleep is prevented | Always on |
+| ✅ `On`  | ⬜ `Off`            | Sleep is prevented | Can go off |
+| ⬜ `Off` | any | Usual behavior, can sleep, if configured |  Can go off |
 
 ## Requirements
 
