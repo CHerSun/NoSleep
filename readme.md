@@ -21,7 +21,7 @@ Options explanation:
 | Off     | doesn't matter | Usual behavior, can sleep, if configured | Can go off |
 
 ## Requirements
-.NET 4.8
+.NET 4.8 or later (4.x.x). Can be downloaded from [here](https://dotnet.microsoft.com/en-us/download/dotnet-framework).
 
 > Previously NoSleep was targeting .NET 4.0 (client profile). If you encounter problems related to this requirements change - please create an [issue](https://github.com/CHerSun/NoSleep/issues)
 
