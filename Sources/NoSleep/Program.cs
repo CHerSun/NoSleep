@@ -20,10 +20,26 @@ namespace NoSleep
                     return;
                 }
 
+                InitUpgradeSettings();
+
                 Application.EnableVisualStyles();
                 Application.SetCompatibleTextRenderingDefault(false);
                 Application.Run(new TrayIcon());
             }
         }
+
+        /// <summary>
+        /// If no settings were found - it's possible the program version has changed, and there are settings from a previous version. This will upgrade the settings to the current version.
+        /// </summary>
+        static void InitUpgradeSettings()
+        {
+            if (Properties.Settings.Default.UpgradeRequired)
+            {
+                Properties.Settings.Default.Upgrade();
+                Properties.Settings.Default.UpgradeRequired = false;
+                Properties.Settings.Default.Save();
+            }
+        }
+
     }
 }
