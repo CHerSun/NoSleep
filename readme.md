@@ -12,6 +12,14 @@ You can click tray icon (or toggle Enabled context menu item) to toggle NoSleep 
 
 If you wish to completely stop it - close the program - right-click tray icon and select "Close".
 
+Options explanation:
+
+| Enabled | Keep screen On | System | Display |
+|---------|----------------|--------|---------|
+| On      | On             | Sleep is prevented | Always on |
+| On      | Off            | Sleep is prevented | Can go off |
+| Off     | doesn't matter | Usual behavior, can sleep, if configured | Can go off |
+
 ## Requirements
 .NET 4.8
 
