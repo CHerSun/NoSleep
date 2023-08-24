@@ -7,7 +7,8 @@ NoSleep is a tool that prevents Windows OS from automatically going into ScreenS
 
 Download **NoSleep.exe** from [the latest release](https://github.com/CHerSun/NoSleep/releases/latest). Save it anywhere you like. Then just run it and forget. While active NoSleep will sit in Windows tray and prevent Windows from blocking.
 
-> NoSleep is now available via [scoop](https://scoop.sh/) too: `scoop install nosleep`
+> NoSleep is now available via [scoop](https://scoop.sh/) too: `scoop install extras/nosleep`
+> if extras bucket is not yet used: `scoop bucket add extras`
 
 You can also enable Autostart from context menu or manually add shortcut to NoSleep to your StartUp items for NoSleep to start on your login. 
 
