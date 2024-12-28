@@ -3,20 +3,12 @@ using System.Runtime.InteropServices;
 
 namespace NoSleep
 {
-    /*
-     * Value 	Meaning
-
-ES_SYSTEM_REQUIRED
-0x00000001
-
-    Forces the system to be in the working state by resetting the system idle timer.
-
-ES_USER_PRESENT
-0x00000004
-
-    This value is not supported. If ES_USER_PRESENT is combined with other esFlags values, the call will fail and none of the specified states will be set. 
-    */
-    [FlagsAttribute]
+    /// <summary>
+    /// Windows Execution State ENUM with available and not deprecated flags.
+    /// See <see href="https://learn.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-setthreadexecutionstate">SetThreadExecutionState</see>.
+    /// See <see href="https://msdn.microsoft.com/en-us/library/aa373208.aspx?f=255&MSPPError=-2147217396">article</see> for details.
+    /// </summary>
+    [Flags]
     internal enum EXECUTION_STATE : uint
     {
         /// <summary> No flags. Should NEVER be used. Either use ES_CONTINUOUS with no other flags (if previously used) or nothing. </summary>
@@ -33,9 +25,25 @@ ES_USER_PRESENT
         ES_CONTINUOUS = 0x80000000
     }
 
+    /// <summary>
+    /// Extension methods for <see cref="EXECUTION_STATE"/> enum.
+    /// </summary>
+    internal static class ExecutionStateEnumExtensions
+    {
+        internal static EXECUTION_STATE EnableFlag(this EXECUTION_STATE value, EXECUTION_STATE flag) => value | flag;
+        internal static EXECUTION_STATE DisableFlag(this EXECUTION_STATE value, EXECUTION_STATE flag) => value & ~flag;
+        internal static EXECUTION_STATE ToggleFlag(this EXECUTION_STATE value, EXECUTION_STATE flag) => value ^ flag;
+    }
+
+    /// <summary>
+    /// Win32 API wrapper.
+    /// </summary>
     internal static class WinU
     {
-        // Import SetThreadExecutionState Win32 API and necessary flags
+        /// <summary>
+        /// Import SetThreadExecutionState from Win32 API.
+        /// See <see href="https://learn.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-setthreadexecutionstate">SetThreadExecutionState</see>.
+        /// </summary>
         [DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
         static internal extern EXECUTION_STATE SetThreadExecutionState(EXECUTION_STATE esFlags);
     }

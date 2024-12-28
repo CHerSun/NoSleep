@@ -12,11 +12,11 @@ namespace NoSleep
         [STAThread]
         static void Main()
         {
-            using (Mutex mutex = new Mutex(false, TrayIcon.AppGuid))
+            using (Mutex mutex = new Mutex(false, Properties.Settings.Default.AppMutexGuid))
             {
                 if (!mutex.WaitOne(0, false))
                 {
-                    MessageBox.Show($"{TrayIcon.AppName} instance is already running.", TrayIcon.AppName, MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    MessageBox.Show($"{Properties.Settings.Default.AppName} instance is already running.", Properties.Settings.Default.AppName, MessageBoxButtons.OK, MessageBoxIcon.Information);
                     return;
                 }
 
@@ -29,7 +29,8 @@ namespace NoSleep
         }
 
         /// <summary>
-        /// If no settings were found - it's possible the program version has changed, and there are settings from a previous version. This will upgrade the settings to the current version.
+        /// If no settings were found - it's possible that the program version has changed and there are settings from a previous version.
+        /// This function will upgrade the settings to the current version - this preserves user settings.
         /// </summary>
         static void InitUpgradeSettings()
         {
@@ -40,6 +41,5 @@ namespace NoSleep
                 Properties.Settings.Default.Save();
             }
         }
-
     }
 }

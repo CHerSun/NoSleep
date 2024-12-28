@@ -8,5 +8,23 @@
     <Setting Name="UpgradeRequired" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
+    <Setting Name="SaveEnabledState" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="EnabledState" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="AppName" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">NoSleep</Value>
+    </Setting>
+    <Setting Name="AppStartupName" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">NoSleep</Value>
+    </Setting>
+    <Setting Name="AppMutexGuid" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">8b2caf22-dc35-4e70-88df-35933ab63f69</Value>
+    </Setting>
+    <Setting Name="RefreshIntervalMs" Type="System.Int32" Scope="Application">
+      <Value Profile="(Default)">10000</Value>
+    </Setting>
   </Settings>
 </SettingsFile>
