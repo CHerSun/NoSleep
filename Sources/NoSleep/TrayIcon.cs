@@ -1,4 +1,8 @@
 ﻿using System;
+using System.IO;
+using System.Linq;
+using System.Diagnostics;
+using System.Collections.Generic;
 using System.Windows.Forms;
 
 namespace NoSleep
@@ -13,6 +17,7 @@ namespace NoSleep
 
         // PRIVATE VARIABLES
         private NotifyIcon _trayIcon;
+        private ToolStripMenuItem _menuItem_ConfigureApps;
         private ToolStripMenuItem _menuItem_Enabled;
         private ToolStripMenuItem _menuItem_DisplayRequired;
         private ToolStripMenuItem _menuItem_AutoStart;
@@ -62,6 +67,12 @@ namespace NoSleep
             };
             _menuItem_RememberEnabledState.Click += Click_SaveEnabledState;
 
+            _menuItem_ConfigureApps = new ToolStripMenuItem("Configure apps")
+            {
+                ToolTipText = "Configure apps to keep the screen on when they are running."
+            };
+            _menuItem_ConfigureApps.Click += Click_ConfigureApps;
+
             _menuItem_Enabled = new ToolStripMenuItem("Enabled")
             {
                 Checked = !Properties.Settings.Default.SaveEnabledState || Properties.Settings.Default.EnabledState,
@@ -82,6 +93,8 @@ namespace NoSleep
             _trayIcon.ContextMenuStrip.Items.Add(_menuItem_AutoStart);
             _trayIcon.ContextMenuStrip.Items.Add(_menuItem_DisplayRequired);
             _trayIcon.ContextMenuStrip.Items.Add(_menuItem_RememberEnabledState);
+            _trayIcon.ContextMenuStrip.Items.Add(new ToolStripSeparator());
+            _trayIcon.ContextMenuStrip.Items.Add(_menuItem_ConfigureApps);
             _trayIcon.ContextMenuStrip.Items.Add(new ToolStripSeparator());
             _trayIcon.ContextMenuStrip.Items.Add(_menuItem_Enabled);
             _trayIcon.ContextMenuStrip.Items.Add(_MenuItem_Close);
@@ -121,6 +134,12 @@ namespace NoSleep
             SaveEnabledState(_menuItem_Enabled.Checked);
         }
 
+        private void Click_ConfigureApps(object sender, EventArgs e)
+        {
+            using var configForm = new ConfigureAppsForm();
+            configForm.ShowDialog();
+        }
+
         /// <summary> Click on "Autostart at login" menu item - Toggle the autostart state and update the menu item accordingly.</summary>
         private void Click_AutoStart(object sender, EventArgs e)
         {
@@ -156,7 +175,89 @@ namespace NoSleep
         /// <summary> Timer tick to refresh PC-required lock. </summary>
         private void RefreshTimer_Tick(object sender, EventArgs e)
         {
+            // If the app is disabled via the menu, ensure we don't keep the system awake.
+            if (!_menuItem_Enabled.Checked)
+            {
+                WinU.SetThreadExecutionState(EXECUTION_STATE.ES_CONTINUOUS);
+                return;
+            }
+
+            // If the "Keep screen on" setting is disabled, do not check processes and do not keep the screen on.
+            if (!Properties.Settings.Default.DisplayRequired)
+            {
+                WinU.SetThreadExecutionState(EXECUTION_STATE.ES_CONTINUOUS);
+                return;
+            }
+
+            // At this point: DisplayRequired is true.
+            // If there are no configured apps, always keep the screen on.
+            var apps = AppsConfig.Load();
+            bool anyConfigured = apps != null && apps.Count > 0;
+
+            var desired = EXECUTION_STATE.ES_CONTINUOUS | EXECUTION_STATE.ES_AWAYMODE_REQUIRED;
+
+            if (!anyConfigured)
+            {
+                // No apps configured -> always keep screen on
+                desired |= EXECUTION_STATE.ES_SYSTEM_REQUIRED | EXECUTION_STATE.ES_DISPLAY_REQUIRED;
+            }
+            else
+            {
+                // Apps configured -> keep screen on only when one of them is running
+                if (AreAnyConfiguredAppsRunning())
+                    desired |= EXECUTION_STATE.ES_SYSTEM_REQUIRED | EXECUTION_STATE.ES_DISPLAY_REQUIRED;
+            }
+
+            ExecutionMode = desired;
             WinU.SetThreadExecutionState(ExecutionMode);
+        }
+
+        /// <summary>
+        /// Returns true if any of the configured apps are currently running.
+        /// Matching is attempted by full path (when accessible) and by process name fallback.
+        /// </summary>
+        private bool AreAnyConfiguredAppsRunning()
+        {
+            try
+            {
+                // Build lookup of expected process names (filename without extension).
+                var expectedNames = apps
+                    .Where(a => !string.IsNullOrWhiteSpace(a.ExePath))
+                    .Select(a => Path.GetFileNameWithoutExtension(a.ExePath).ToLowerInvariant())
+                    .Where(n => !string.IsNullOrEmpty(n))
+                    .ToHashSet();
+
+                var processes = Process.GetProcesses();
+                foreach (var p in processes)
+                {
+                    try
+                    {
+                        // Try full path match first (may throw for system processes).
+                        string path = null;
+                        try { path = p.MainModule?.FileName; } catch { path = null; }
+                        if (!string.IsNullOrEmpty(path))
+                        {
+                            var lower = path.ToLowerInvariant();
+                            if (apps.Any(a => string.Equals(a.ExePath, lower, StringComparison.OrdinalIgnoreCase)))
+                                return true;
+                        }
+
+                        // Fallback: match process name
+                        if (expectedNames.Contains(p.ProcessName.ToLowerInvariant()))
+                            return true;
+                    }
+                    catch
+                    {
+                        // ignore individual process errors
+                    }
+                }
+
+                return false;
+            }
+            catch
+            {
+                return false;
+            }
         }
 
         // PRIVATE METHODS
