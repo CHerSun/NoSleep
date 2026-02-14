@@ -101,12 +101,12 @@ namespace NoSleep
             this.Controls.Add(this.buttonRemove);
             this.Controls.Add(this.buttonAdd);
             this.Controls.Add(this.dataGridViewApps);
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.Sizable;
-            this.MaximizeBox = true;
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
+            this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "ConfigureAppsForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
-            this.Text = "Configure Applications";
+            this.Text = "Configure Applications to monitor";
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewApps)).EndInit();
             this.ResumeLayout(false);
 

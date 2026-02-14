@@ -24,9 +24,11 @@ namespace NoSleep
                 if (!File.Exists(ConfigFile))
                     return new List<AppEntry>();
 
-                using var stream = File.OpenRead(ConfigFile);
-                var ser = new XmlSerializer(typeof(List<AppEntry>));
-                return (List<AppEntry>)ser.Deserialize(stream) ?? new List<AppEntry>();
+                using (var stream = File.OpenRead(ConfigFile))
+                {
+                  var ser = new XmlSerializer(typeof(List<AppEntry>));
+                  return (List<AppEntry>)ser.Deserialize(stream) ?? new List<AppEntry>();
+                }
             }
             catch
             {
@@ -40,10 +42,12 @@ namespace NoSleep
             {
                 if (!Directory.Exists(ConfigDir))
                     Directory.CreateDirectory(ConfigDir);
-                
-                using var stream = File.Create(ConfigFile);
-                var ser = new XmlSerializer(typeof(List<AppEntry>));
-                ser.Serialize(stream, apps ?? new List<AppEntry>());
+
+                using (var stream = File.Create(ConfigFile))
+                {
+                  var ser = new XmlSerializer(typeof(List<AppEntry>));
+                  ser.Serialize(stream, apps ?? new List<AppEntry>());
+                }
             }
             catch (Exception)
             {

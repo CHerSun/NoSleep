@@ -37,15 +37,17 @@ namespace NoSleep
 
         private void buttonAdd_Click(object sender, EventArgs e)
         {
-            using var dlg = new OpenFileDialog();
-            dlg.Filter = "Executable|*.exe|All files|*.*";
-            dlg.Title = "Select application executable";
-            if (dlg.ShowDialog(this) != DialogResult.OK)
+            using (var dlg = new OpenFileDialog())
+            {
+              dlg.Filter = "Executable|*.exe|All files|*.*";
+              dlg.Title = "Select application executable";
+              if (dlg.ShowDialog(this) != DialogResult.OK)
                 return;
 
-            var path = dlg.FileName;
-            var name = System.IO.Path.GetFileNameWithoutExtension(path);
-            appsBinding.Add(new AppEntry { Name = name, ExePath = path });
+              var path = dlg.FileName;
+              var name = System.IO.Path.GetFileNameWithoutExtension(path);
+              appsBinding.Add(new AppEntry { Name = name, ExePath = path });
+            }
         }
 
         private void buttonRemove_Click(object sender, EventArgs e)
