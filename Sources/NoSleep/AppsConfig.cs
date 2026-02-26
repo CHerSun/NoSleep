@@ -13,7 +13,7 @@ namespace NoSleep
 
     internal static class AppsConfig
     {
-        private static string ConfigDir => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "NoSleep");
+        private static string ConfigDir => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "NoSleep");
         private static string ConfigFile => Path.Combine(ConfigDir, "apps.xml");
 
         public static List<AppEntry> Load()
