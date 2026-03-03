@@ -1,58 +1,45 @@
-using System;
+using NoSleep.Properties;
 using System.Collections.Generic;
 using System.IO;
-using System.Xml.Serialization;
+using System.Linq;
 
 namespace NoSleep
 {
     public class AppEntry
     {
+        /// <summary> Program displayed name </summary>
         public string Name { get; set; }
+        /// <summary> Path to the executable file </summary>
         public string ExePath { get; set; }
+
+        /// <summary> Create a new AppEntry from executable path. Name is taken as file name without extension. </summary>
+        public static AppEntry FromExePath(string exePath) 
+            => new AppEntry() { Name = Path.GetFileNameWithoutExtension(exePath), ExePath = exePath };
     }
 
     internal static class AppsConfig
     {
-        private static string ConfigDir => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "NoSleep");
-        private static string ConfigFile => Path.Combine(ConfigDir, "apps.xml");
-
         public static List<AppEntry> Load()
         {
-            try
-            {
-                if (!Directory.Exists(ConfigDir)) Directory.CreateDirectory(ConfigDir);
-                if (!File.Exists(ConfigFile))
-                    return new List<AppEntry>();
-
-                using (var stream = File.OpenRead(ConfigFile))
-                {
-                  var ser = new XmlSerializer(typeof(List<AppEntry>));
-                  return (List<AppEntry>)ser.Deserialize(stream) ?? new List<AppEntry>();
-                }
-            }
-            catch
-            {
-                return new List<AppEntry>();
-            }
+            var AppsList = new List<AppEntry>(Settings.Default.WatchedApps.Count);
+            foreach (var app in Settings.Default.WatchedApps)
+                AppsList.Add(AppEntry.FromExePath(app));
+            return AppsList;
         }
 
         public static void Save(List<AppEntry> apps)
         {
-            try
-            {
-                if (!Directory.Exists(ConfigDir))
-                    Directory.CreateDirectory(ConfigDir);
+            // Can we avoid saving? Do we really have changes?
+            var newDistinctPaths = new HashSet<string>(apps.Select(x => x.ExePath));
+            var oldDistinctPaths = new HashSet<string>(Load().Select(x => x.ExePath));
 
-                using (var stream = File.Create(ConfigFile))
-                {
-                  var ser = new XmlSerializer(typeof(List<AppEntry>));
-                  ser.Serialize(stream, apps ?? new List<AppEntry>());
-                }
-            }
-            catch (Exception)
-            {
-                // swallow - non-critical
-            }
+            if (newDistinctPaths == oldDistinctPaths)
+                return;
+
+            // We reached here = some changes. Save actually.
+            Settings.Default.WatchedApps.Clear();
+            Settings.Default.WatchedApps.AddRange(apps.Select(x => x.ExePath).ToArray());
+            Settings.Default.Save();
         }
     }
 }
