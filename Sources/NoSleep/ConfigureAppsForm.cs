@@ -1,68 +1,64 @@
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
+using System.Drawing;
 using System.Windows.Forms;
 
 namespace NoSleep
 {
-    public partial class ConfigureAppsForm : Form
+    internal partial class ConfigureAppsForm : Form
     {
-        private BindingList<AppEntry> appsBinding;
+        private readonly TrayIcon mainForm;
 
-        public ConfigureAppsForm()
+        public ConfigureAppsForm(TrayIcon main)
         {
+            // Back-reference for immediate apps watchlist toggling
+            mainForm = main;
+
+            // Initialize the form
             InitializeComponent();
 
-            var loaded = AppsConfig.Load();
-            appsBinding = new BindingList<AppEntry>(loaded);
-            appsBinding.ListChanged += (s, e) => SaveApps();
-
+            // Initialize the state
             dataGridViewApps.AutoGenerateColumns = false;
-            dataGridViewApps.DataSource = appsBinding;
+            dataGridViewApps.DataSource = mainForm.WatchedApps;
             UpdateRemoveState();
+            UpdateEnabledState(mainForm.UserWatchingEnabled);
         }
 
-        private void SaveApps()
-        {
-            try
-            {
-                AppsConfig.Save(appsBinding.ToList());
-            }
-            catch
-            {
-                // ignore save errors
-            }
-        }
-
-        private void buttonAdd_Click(object sender, EventArgs e)
+        private void ButtonAdd_Click(object sender, EventArgs e)
         {
             using (var dlg = new OpenFileDialog())
             {
-              dlg.Filter = "Executable|*.exe|All files|*.*";
-              dlg.Title = "Select application executable";
-              if (dlg.ShowDialog(this) != DialogResult.OK)
-                return;
+                dlg.Filter = "Executable|*.exe|All files|*.*";
+                dlg.Title = "Select application executable";
+                if (dlg.ShowDialog(this) != DialogResult.OK)
+                    return;
 
-              var path = dlg.FileName;
-              var name = System.IO.Path.GetFileNameWithoutExtension(path);
-              appsBinding.Add(new AppEntry { Name = name, ExePath = path });
+                var app = AppEntry.FromExePath(dlg.FileName);
+                mainForm.WatchedApps.Add(app);
             }
         }
 
-        private void buttonRemove_Click(object sender, EventArgs e)
+        private void ButtonRemove_Click(object sender, EventArgs e)
         {
             if (dataGridViewApps.SelectedRows.Count == 0)
                 return;
-            
+
             var row = dataGridViewApps.SelectedRows[0];
             if (row.DataBoundItem is AppEntry item)
-            {
-                appsBinding.Remove(item);
-            }
+                mainForm.WatchedApps.Remove(item);
         }
 
-        private void dataGridViewApps_SelectionChanged(object sender, EventArgs e)
+        private void UpdateEnabledState(bool enabled)
+        {
+            buttonEnable.Text = enabled ? "Apps watching is enabled" : "Apps watching is DISABLED ❌";
+            buttonEnable.BackColor = enabled ? Color.LightGreen : Color.Coral;
+            mainForm.UserWatchingEnabled = enabled;
+        }
+        private void ButtonEnable_Click(object sender, EventArgs e)
+        {
+            UpdateEnabledState(!mainForm.UserWatchingEnabled);
+        }
+
+        private void DataGridViewApps_SelectionChanged(object sender, EventArgs e)
         {
             UpdateRemoveState();
         }
