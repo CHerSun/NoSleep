@@ -269,6 +269,8 @@ namespace NoSleep
         {
             // Save list to settings
             AppsConfig.Save(WatchedApps.ToList());
+            // Clear cached HashSets
+            _nameSet = _pathSet = null;
             // Re-evaluate watching timer and effective state
             OnUserSettingsChanged();
         }
@@ -295,17 +297,28 @@ namespace NoSleep
             if (ExecutionMode.HasFlag(EXECUTION_STATE.ES_CONTINUOUS))
                 WinU.SetThreadExecutionState(EXECUTION_STATE.ES_CONTINUOUS);
         }
+
+        /// <summary> Caching watched apps paths </summary>
+        private HashSet<string> _pathSet;
+        /// <summary> Caching watched apps names </summary>
+        private HashSet<string> _nameSet;
         /// <summary> Checks if any of Watched apps are currently running. </summary>
         private bool AreAnyConfiguredAppsRunning(List<AppEntry> apps)
         {
-            // Prepare HashSets with paths and names
-            var pathSet = apps.Select(app => app.ExePath)
+            // If there are no apps - nothing to watch. Explicit true, if we reached here somewhy.
+            if (apps.Count == 0)
+                return true;
+
+            if (_pathSet is null)
+            {
+                // We have apps, but no cached paths? Prepare HashSets with paths and names
+                _pathSet = apps.Select(app => app.ExePath)
                               .Where(path => !string.IsNullOrWhiteSpace(path))
                               .ToHashSet(StringComparer.OrdinalIgnoreCase);
-
-            var nameSet = apps.Select(app => app.Name)
+                _nameSet = apps.Select(app => app.Name)
                               .Where(name => !string.IsNullOrWhiteSpace(name))
                               .ToHashSet(StringComparer.OrdinalIgnoreCase);
+            }
 
             // Test running processes to see if we have any of the wanted apps running
             return Process.GetProcesses().Any(p =>
@@ -313,11 +326,11 @@ namespace NoSleep
                 // Exception free Process path extraction.
                 // Standard Process.MainModule throws exceptions, which consume quite a lot of cpu.
                 string path = p.TryGetExecutablePath();
-                if ((path != null) && pathSet.Contains(path, StringComparer.OrdinalIgnoreCase))
+                if ((path != null) && _pathSet.Contains(path, StringComparer.OrdinalIgnoreCase))
                     return true;
 
                 // Fallback to name-only detection, if we can't get process path.
-                return nameSet.Contains(p.ProcessName, StringComparer.OrdinalIgnoreCase);
+                return _nameSet.Contains(p.ProcessName, StringComparer.OrdinalIgnoreCase);
             });
         }
         /// <summary> A single point to reflect user settings change into effective app state </summary>
