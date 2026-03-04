@@ -15,6 +15,7 @@ namespace NoSleep
 
             // Initialize the form
             InitializeComponent();
+            this.Icon = Icon.ExtractAssociatedIcon(Application.ExecutablePath);
 
             // Initialize the state
             dataGridViewApps.AutoGenerateColumns = false;
