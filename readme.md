@@ -1,49 +1,55 @@
-# NoSleep windows utility
-NoSleep is a tool that prevents Windows OS from automatically going into ScreenSaver / Sleep / Lock modes. It's meant for those cases where user cannot change settings (due to corporate-enforced policy, for example). Inspired by Linux Caffeine.
+# NoSleep
 
-> NOTE: Windows PowerToys now has PowerToys.Awake tool which does the same thing. It could require admin permissions though, also PowerToys are quite large. NoSleep aims to be as minimal as possible with no extra permissions required.
+NoSleep is a lightweight tool that prevents Windows from automatically activating the screen saver, sleep mode, or lock screen. It's designed for situations where you can't change these settings yourself—for example, due to corporate-enforced policies. Inspired by Linux Caffeine.
+
+> **Note:** Windows PowerToys includes a tool called Awake that does the same thing, but PowerToys may require administrator privileges and is quite large. NoSleep aims to be as minimal as possible and runs without any extra permissions.
+
+## Installation
+
+NoSleep can be installed via the [Scoop](https://scoop.sh/) package manager:
+
+```sh
+scoop bucket add extras
+scoop install extras/nosleep
+```
+
+Alternatively, you can download the latest release manually from [the releases page](https://github.com/CHerSun/NoSleep/releases/latest).
 
 ## Usage
 
-Download **NoSleep.exe** from [the latest release](https://github.com/CHerSun/NoSleep/releases/latest). Save it anywhere you like. Then just run it and forget. While active NoSleep will sit in Windows tray and prevent Windows from blocking.
+NoSleep is designed to be "set and forget". Once running, it sits in the Windows system tray and prevents your PC from sleeping.
 
-> NoSleep is now available via [scoop](https://scoop.sh/) too: `scoop install extras/nosleep`
->
-> if extras bucket is not yet in use - you need to add the bucket using: `scoop bucket add extras`
+- **Left‑click** the tray icon to toggle the enabled state on or off. The icon changes to reflect the current state.
+- **Right‑click** the tray icon to open a menu with additional options:
 
-You can also enable Autostart from context menu or manually add shortcut to NoSleep to your StartUp items for NoSleep to start on your login. 
+  - **Autostart at login** – Start NoSleep automatically when you log in.
+  - **Keep screen on** – Prevent the display from turning off while NoSleep is enabled.
+  - **Remember enabled state** – Save the enabled state between application restarts.
+  - **Configure apps to monitor** – Define a list of applications. If none of them are running, NoSleep automatically disables itself; if any monitored app is running, NoSleep enables itself and prevents sleep. This dynamic behavior only works when NoSleep is enabled by the user. (Available since v1.4.0)
 
-You can click tray icon (or toggle Enabled context menu item) to toggle NoSleep state.
+To completely stop NoSleep, right‑click the tray icon and select **Close**.
 
-If you wish to completely stop it - close the program - right-click tray icon and select "Close".
+### Behavior Matrix
 
-Options explanation:
-
-| `Enabled`  | `Keep screen On` | System behavior | Display behavior |
-|----------|----------------|--------|---------|
-| ✅ `On`  | ✅ `On`             | Sleep is prevented | Always on |
-| ✅ `On`  | ⬜ `Off`            | Sleep is prevented | Can go off |
-| ⬜ `Off` | any | Usual behavior, can sleep, if configured |  Can go off |
+| Enabled | Keep Screen On | System Behavior                          | Display Behavior |
+| ------- | -------------- | ---------------------------------------- | ---------------- |
+| ✅ On   | ✅ On          | Sleep is prevented                       | Always on        |
+| ✅ On   | ⬜ Off         | Sleep is prevented                       | Can turn off     |
+| ⬜ Off  | Any            | Normal system behavior (sleep may occur) | Can turn off     |
 
 ## Requirements
 
-.NET 4.8 or later (4.x.x). Can be downloaded from [here](https://dotnet.microsoft.com/en-us/download/dotnet-framework).
+- .NET Framework 4.8 or later (4.x branch). This is typically preinstalled on Windows 10 and later. If needed, you can download it from [Microsoft](https://dotnet.microsoft.com/en-us/download/dotnet-framework).
 
-> Previously NoSleep was targeting .NET 4.0 (client profile). If you encounter problems related to this requirements change - please create an [issue](https://github.com/CHerSun/NoSleep/issues)
+## How It Works
 
-## How it works
+NoSleep calls the `SetThreadExecutionState` function every 10 seconds, resetting Windows' display and idle timers. This process uses negligible CPU and only a small amount of RAM. The compiled binary includes icons (about 180 KB) and the core code.
 
-NoSleep works through calling to SetThreadExecutionState resetting display/idle Windows timers every 10 seconds. Should use no CPU and around 6-7 MBs of RAM. Icons are taking up ~180 KB in compiled binary, the rest is the code (~10 KB).
+## Icons Attribution
 
-## Icons attribution
-
-| Usage | Icon and source | License | Artist |
-|-------|-----------------|---------|--------|
-| Enabled state | [Coffee icon](https://www.iconarchive.com/show/food-icons-by-martin-berube/coffee-icon.html) | Freeware | [Martin Berube](https://www.iconarchive.com/artist/martin-berube.html) |
+| Usage          | Icon & Source                                                                                  | License                  | Artist                                                                      |
+| -------------- | ---------------------------------------------------------------------------------------------- | ------------------------ | --------------------------------------------------------------------------- |
+| Enabled state  | [Coffee icon](https://www.iconarchive.com/show/food-icons-by-martin-berube/coffee-icon.html)   | Freeware                 | [Martin Berube](https://www.iconarchive.com/artist/martin-berube.html)      |
 | Disabled state | [Sleep icon](https://www.iconarchive.com/show/material-icons-by-pictogrammers/sleep-icon.html) | Apache 2.0 (Open Source) | [Pictogrammers Team](https://www.iconarchive.com/artist/pictogrammers.html) |
 
-Thanks for icons!
-
-## License
-
-The Unlicense
+Many thanks to the artists for these icons!

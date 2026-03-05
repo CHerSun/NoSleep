@@ -26,9 +26,7 @@ namespace NoSleep
         ES_CONTINUOUS = 0x80000000
     }
 
-    /// <summary>
-    /// Extension methods for <see cref="EXECUTION_STATE"/> enum.
-    /// </summary>
+    /// <summary> Extension methods for <see cref="EXECUTION_STATE"/> enum. </summary>
     internal static class ExecutionStateEnumExtensions
     {
         internal static EXECUTION_STATE EnableFlag(this EXECUTION_STATE value, EXECUTION_STATE flag) => value | flag;
@@ -36,9 +34,7 @@ namespace NoSleep
         internal static EXECUTION_STATE ToggleFlag(this EXECUTION_STATE value, EXECUTION_STATE flag) => value ^ flag;
     }
 
-    /// <summary>
-    /// Win32 API wrapper.
-    /// </summary>
+    /// <summary> Win32 API wrapper for SetThreadExecutionState. </summary>
     internal static class WinU
     {
         /// <summary>
@@ -49,30 +45,25 @@ namespace NoSleep
         static internal extern EXECUTION_STATE SetThreadExecutionState(EXECUTION_STATE esFlags);
     }
 
-    /// <summary>
-    /// A class with Process extensions to watch running apps.
-    /// </summary>
+    /// <summary> A class with Process extensions to watch running apps via Win32 API </summary>
     public static class ProcessExtensions
     {
-        [DllImport("kernel32.dll", SetLastError = true)]
-        private static extern bool QueryFullProcessImageName(
+        [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
+        private static unsafe extern bool QueryFullProcessImageName(
             IntPtr hProcess,
             int dwFlags,
-            System.Text.StringBuilder lpExeName,
+            char* lpExeName,
             ref int lpdwSize);
 
         [DllImport("kernel32.dll", SetLastError = true)]
-        private static extern IntPtr OpenProcess(
-            uint processAccess,
-            bool bInheritHandle,
-            int processId);
+        private static extern IntPtr OpenProcess(uint processAccess, bool bInheritHandle, int processId);
 
         [DllImport("kernel32.dll", SetLastError = true)]
         private static extern bool CloseHandle(IntPtr hObject);
 
         private const uint PROCESS_QUERY_LIMITED_INFORMATION = 0x1000;
 
-        public static string TryGetExecutablePath(this Process process)
+        public static unsafe string TryGetExecutablePath(this Process process)
         {
             IntPtr hProcess = OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION, false, process.Id);
             if (hProcess == IntPtr.Zero)
@@ -80,11 +71,17 @@ namespace NoSleep
 
             try
             {
-                int capacity = 1024;
-                var sb = new System.Text.StringBuilder(capacity);
-                return QueryFullProcessImageName(hProcess, 0, sb, ref capacity)
-                    ? sb.ToString()
-                    : null;
+                // Max Windows path length is 32767 characters + ending \0 character
+                const int maxPathChars = 32768;
+                char* buffer = stackalloc char[maxPathChars];
+                int size = maxPathChars; // Var for ref parameter
+
+                if (QueryFullProcessImageName(hProcess, 0, buffer, ref size))
+                {
+                    // size now contains actual output string length - create a string from the buffer.
+                    return new string(buffer, 0, size);
+                }
+                return null;
             }
             finally
             {
