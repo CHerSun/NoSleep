@@ -12,11 +12,19 @@ namespace NoSleep
         /// <exception cref="Exception"> On IO related issues, including permissions.</exception>
         public static void CreateShortcut(string targetPath, string shortcutPath)
         {
-            var shell = new IWshRuntimeLibrary.WshShell();
-            var shortcut = (IWshRuntimeLibrary.IWshShortcut)shell.CreateShortcut(shortcutPath);
+            // Instead of IWshRuntimeLibrary COM reference
+            // we use late binding - it works on both .NET Framework and .NET 8.0
+            // and doesn't need full msbuild (dotnet core msbuild is enough)
+            Type shellType = Type.GetTypeFromProgID("WScript.Shell");
+            if (shellType == null)
+                throw new InvalidOperationException("WScript.Shell is not available on this system.");
+
+            dynamic shell = Activator.CreateInstance(shellType);
+            dynamic shortcut = shell.CreateShortcut(shortcutPath);
             shortcut.TargetPath = targetPath;
             shortcut.Save();
         }
+
         /// <summary> Path to the autostart shortcut. </summary>
         private static readonly string autostartPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Startup), $"{Properties.Settings.Default.AppStartupName}.lnk");
 
