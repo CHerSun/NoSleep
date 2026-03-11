@@ -5,10 +5,10 @@
     <Copyright>Copyleft since 2016</Copyright>
     <RepositoryUrl>https://github.com/CHerSun/NoSleep</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
-    <Version>1.4.1</Version>
+    <Version>1.4.2</Version>
     <!-- file info -->
     <AssemblyTitle>A Windows tool to prevent sleep</AssemblyTitle>
-    <FileVersion>1.4.1.0</FileVersion>
+    <FileVersion>1.4.2.0</FileVersion>
     <InformationalVersion>$(Version) (https://github.com/CHerSun/NoSleep)</InformationalVersion>
 
     <!-- COM visibility -->
@@ -31,7 +31,7 @@
     <EnableDefaultEmbeddedResourceItems>false</EnableDefaultEmbeddedResourceItems>
     <!-- Single-file publishing settings for .NET 8.0 (ignored for .NET Framework) -->
     <PublishSingleFile Condition="'$(TargetFramework)' == 'net8.0-windows'">true</PublishSingleFile>
-    <SelfContained Condition="'$(TargetFramework)' == 'net8.0-windows'">false</SelfContained>    
+    <SelfContained Condition="'$(TargetFramework)' == 'net8.0-windows'">false</SelfContained>
   </PropertyGroup>
 
   <ItemGroup>
