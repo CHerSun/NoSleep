@@ -1,6 +1,7 @@
 using System;
 using System.Drawing;
 using System.Windows.Forms;
+using NoSleep.Properties;
 
 namespace NoSleep
 {
@@ -28,8 +29,8 @@ namespace NoSleep
         {
             using (var dlg = new OpenFileDialog())
             {
-                dlg.Filter = "Executable|*.exe|All files|*.*";
-                dlg.Title = "Select application executable";
+                dlg.Filter = Resources.FileDlg_FilterExecutable + "|*.exe|" + Resources.FileDlg_FilterAllFiles + "|*.*";
+                dlg.Title = Resources.FileDlg_Title;
                 if (dlg.ShowDialog(this) != DialogResult.OK)
                     return;
 
@@ -50,7 +51,7 @@ namespace NoSleep
 
         private void UpdateEnabledState(bool enabled)
         {
-            buttonEnable.Text = enabled ? "Apps watching is enabled" : "Apps watching is DISABLED ❌";
+            buttonEnable.Text = enabled ? Resources.Btn_AppsWatchingEnabled : Resources.Btn_AppsWatchingDisabled;
             buttonEnable.BackColor = enabled ? Color.LightGreen : Color.Coral;
             mainForm.UserWatchingEnabled = enabled;
         }

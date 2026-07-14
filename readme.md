@@ -1,3 +1,5 @@
+> 🌐 Languages: [English](readme.md) | [简体中文](readme.zh-CN.md)
+
 # NoSleep
 
 NoSleep is a lightweight tool that prevents Windows from automatically activating the screen saver, sleep mode, or lock screen. It's designed for situations where you can't change these settings yourself—for example, due to corporate-enforced policies. Inspired by Linux Caffeine.

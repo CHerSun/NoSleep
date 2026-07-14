@@ -1,3 +1,5 @@
+> 🌐 Languages: [English](BUILD.md) | [简体中文](BUILD.zh-CN.md)
+
 # How to Build from Source Code
 
 This document describes how to build NoSleep from source code. These instructions are intended for developers who want to contribute or experiment with the codebase.

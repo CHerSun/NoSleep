@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!--
+    Microsoft ResX Schema
+
+    Version 2.0
+
+    The primary goals of this format is to allow a simple XML format
+    that is mostly human readable. The generation and parsing of the
+    various data types are done through the TypeConverter classes
+    associated with the data types.
+  -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="TrayMenu_Close" xml:space="preserve">
+    <value>关闭</value>
+  </data>
+  <data name="TrayMenu_Autostart" xml:space="preserve">
+    <value>登录时自动启动</value>
+  </data>
+  <data name="TrayMenu_RememberState" xml:space="preserve">
+    <value>记住启用状态</value>
+  </data>
+  <data name="TrayMenu_ConfigureApps" xml:space="preserve">
+    <value>配置监视的应用程序</value>
+  </data>
+  <data name="TrayMenu_Enabled" xml:space="preserve">
+    <value>已启用</value>
+  </data>
+  <data name="TrayMenu_KeepScreenOn" xml:space="preserve">
+    <value>保持屏幕常亮</value>
+  </data>
+  <data name="Tooltip_Autostart" xml:space="preserve">
+    <value>是否在登录时自动启动?</value>
+  </data>
+  <data name="Tooltip_RememberState" xml:space="preserve">
+    <value>是否在重启之间记住启用状态?</value>
+  </data>
+  <data name="Tooltip_ConfigureApps" xml:space="preserve">
+    <value>配置应用程序,当其运行时保持屏幕常亮。</value>
+  </data>
+  <data name="Tooltip_Enabled" xml:space="preserve">
+    <value>当前是否已启用?</value>
+  </data>
+  <data name="Tooltip_KeepScreenOn" xml:space="preserve">
+    <value>在保持系统运行的基础上,是否同时保持显示器常亮。</value>
+  </data>
+  <data name="Msg_InstanceRunning" xml:space="preserve">
+    <value>{0} 实例已在运行。</value>
+  </data>
+  <data name="Msg_AutostartRemoveFailed" xml:space="preserve">
+    <value>无法从 '{0}' 移除自启动快捷方式。错误:{1}</value>
+  </data>
+  <data name="Msg_AutostartCreateFailed" xml:space="preserve">
+    <value>无法在 '{0}' 创建自启动快捷方式。错误:{1}</value>
+  </data>
+  <data name="Btn_AppsWatchingEnabled" xml:space="preserve">
+    <value>应用监视已启用</value>
+  </data>
+  <data name="Btn_AppsWatchingDisabled" xml:space="preserve">
+    <value>应用监视已禁用 ❌</value>
+  </data>
+  <data name="FileDlg_FilterExecutable" xml:space="preserve">
+    <value>可执行文件</value>
+  </data>
+  <data name="FileDlg_FilterAllFiles" xml:space="preserve">
+    <value>所有文件</value>
+  </data>
+  <data name="FileDlg_Title" xml:space="preserve">
+    <value>选择应用程序可执行文件</value>
+  </data>
+  <data name="Col_Name" xml:space="preserve">
+    <value>名称</value>
+  </data>
+  <data name="Col_ExePath" xml:space="preserve">
+    <value>可执行文件路径</value>
+  </data>
+  <data name="Btn_Add" xml:space="preserve">
+    <value>➕ 添加</value>
+  </data>
+  <data name="Btn_Remove" xml:space="preserve">
+    <value>➖ 移除</value>
+  </data>
+  <data name="Btn_Enable" xml:space="preserve">
+    <value>启用</value>
+  </data>
+  <data name="Btn_Close" xml:space="preserve">
+    <value>关闭</value>
+  </data>
+  <data name="Form_Title" xml:space="preserve">
+    <value>配置监视的应用程序</value>
+  </data>
+</root>
