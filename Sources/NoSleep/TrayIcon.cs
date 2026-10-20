@@ -36,7 +36,7 @@ namespace NoSleep
         // --- Runtime state ---
         /// <summary> Private flag to show if we found app on the watch list </summary>
         private bool _anyWatchedAppRunning;
-        /// <summary> Last taskbar color mode answer; used to touch the tray icon only when it actually changes. </summary>
+        /// <summary> Last taskbar color mode answer; the poll tick compares against it to skip redundant updates. </summary>
         private bool? _taskbarLight;
 
         // PROPERTIES
@@ -302,7 +302,8 @@ namespace NoSleep
         /// <summary> Taskbar color mode tick - refresh the inactive icon if the user switched light/dark theme.</summary>
         private void ThemeWatchTimer_Tick(object sender, EventArgs e)
         {
-            if (!EffectivePreventSleep)
+            // Skip the icon update while the theme answer is unchanged (the icon is re-applied on every state change anyway).
+            if (!EffectivePreventSleep && _taskbarLight != WinU.IsTaskbarLightTheme())
                 UpdateInactiveTrayIcon();
         }
 
@@ -391,14 +392,11 @@ namespace NoSleep
         }
 
         /// <summary> Sets the inactive ("zzz") tray icon, white on dark taskbars so it stays visible (issue #16).
-        /// Touches the icon only when the color mode answer actually changes. </summary>
+        /// Always applies: the enabled state overwrites the icon, so it must be re-set on every transition into the inactive state. </summary>
         private void UpdateInactiveTrayIcon()
         {
-            bool light = WinU.IsTaskbarLightTheme();
-            if (_taskbarLight == light)
-                return;
-            _taskbarLight = light;
-            _trayIcon.Icon = light ? Resources.TrayIconInactive : Resources.TrayIconInactiveWhite;
+            _taskbarLight = WinU.IsTaskbarLightTheme();
+            _trayIcon.Icon = _taskbarLight.Value ? Resources.TrayIconInactive : Resources.TrayIconInactiveWhite;
         }
 
     }
