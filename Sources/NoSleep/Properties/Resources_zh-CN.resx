@@ -114,7 +114,7 @@
     <value>应用监视已启用</value>
   </data>
   <data name="Btn_AppsWatchingDisabled" xml:space="preserve">
-    <value>应用监视已禁用 ❌</value>
+    <value>应用监视已禁用</value>
   </data>
   <data name="FileDlg_FilterExecutable" xml:space="preserve">
     <value>可执行文件</value>
@@ -139,6 +139,9 @@
   </data>
   <data name="Btn_Enable" xml:space="preserve">
     <value>启用</value>
+  </data>
+  <data name="Btn_Disable" xml:space="preserve">
+    <value>禁用</value>
   </data>
   <data name="Btn_Close" xml:space="preserve">
     <value>关闭</value>

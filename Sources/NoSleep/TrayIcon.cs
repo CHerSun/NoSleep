@@ -1,4 +1,4 @@
-using NoSleep.Properties;
+﻿using NoSleep.Properties;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -143,41 +143,41 @@ namespace NoSleep
             _trayIcon.Click += Click_TrayIcon;
 
             // Create tray menu items
-            var _MenuItem_Close = new ToolStripMenuItem(Resources.TrayMenu_Close);
+            var _MenuItem_Close = new ToolStripMenuItem(Strings.TrayMenu_Close);
             _MenuItem_Close.Click += (e, s) => Application.Exit();
 
-            _menuItem_AutoStart = new ToolStripMenuItem(Resources.TrayMenu_Autostart)
+            _menuItem_AutoStart = new ToolStripMenuItem(Strings.TrayMenu_Autostart)
             {
                 Checked = UserAutoStart,
-                ToolTipText = Resources.Tooltip_Autostart
+                ToolTipText = Strings.Tooltip_Autostart
             };
             _menuItem_AutoStart.Click += Click_AutoStart;
 
-            _menuItem_RememberEnabledState = new ToolStripMenuItem(Resources.TrayMenu_RememberState)
+            _menuItem_RememberEnabledState = new ToolStripMenuItem(Strings.TrayMenu_RememberState)
             {
                 Checked = UserPersistEnabled,
-                ToolTipText = Resources.Tooltip_RememberState
+                ToolTipText = Strings.Tooltip_RememberState
             };
             _menuItem_RememberEnabledState.Click += Click_SaveEnabledState;
 
-            _menuItem_ConfigureApps = new ToolStripMenuItem(Resources.TrayMenu_ConfigureApps)
+            _menuItem_ConfigureApps = new ToolStripMenuItem(Strings.TrayMenu_ConfigureApps)
             {
                 Checked = IsWatchingFeatureActive,
-                ToolTipText = Resources.Tooltip_ConfigureApps
+                ToolTipText = Strings.Tooltip_ConfigureApps
             };
             _menuItem_ConfigureApps.Click += Click_ConfigureApps;
 
-            _menuItem_Enabled = new ToolStripMenuItem(Resources.TrayMenu_Enabled)
+            _menuItem_Enabled = new ToolStripMenuItem(Strings.TrayMenu_Enabled)
             {
                 Checked = UserEnabled,
-                ToolTipText = Resources.Tooltip_Enabled
+                ToolTipText = Strings.Tooltip_Enabled
             };
             _menuItem_Enabled.Click += Click_Enabled;
 
-            _menuItem_DisplayRequired = new ToolStripMenuItem(Resources.TrayMenu_KeepScreenOn)
+            _menuItem_DisplayRequired = new ToolStripMenuItem(Strings.TrayMenu_KeepScreenOn)
             {
                 Checked = !Settings.Default.DisplayRequired,
-                ToolTipText = Resources.Tooltip_KeepScreenOn
+                ToolTipText = Strings.Tooltip_KeepScreenOn
             };
             _menuItem_DisplayRequired.Click += Click_DisplayRequired;
             Click_DisplayRequired(null, null);

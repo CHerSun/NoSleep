@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <!-- Project metadata -->
     <Product>NoSleep</Product>
@@ -58,6 +58,9 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="Properties\Strings.cs">
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
     <Compile Include="Properties\Settings.Designer.cs">
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <AutoGen>True</AutoGen>
@@ -75,7 +78,16 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="Properties\Resources.zh-CN.resx">
+    <!-- Localized string resources are embedded into the main assembly (explicit LogicalName)
+         instead of building satellite DLLs: the published artifact is the bare executable,
+         so satellite assemblies would never reach end users. Underscore file names keep
+         MSBuild's AssignCulture from recognizing them as culture resources. -->
+    <EmbeddedResource Include="Properties\Resources_ru.resx">
+      <LogicalName>NoSleep.Properties.Resources.ru.resources</LogicalName>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources_zh-CN.resx">
+      <LogicalName>NoSleep.Properties.Resources.zh-CN.resources</LogicalName>
       <DependentUpon>Resources.resx</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>

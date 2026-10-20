@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.IO;
 using System.Windows.Forms;
 
@@ -46,7 +46,7 @@ namespace NoSleep
                 }
                 catch (Exception e)
                 {
-                    MessageBox.Show(string.Format(Properties.Resources.Msg_AutostartRemoveFailed, autostartPath, e.Message),
+                    MessageBox.Show(string.Format(Properties.Strings.Msg_AutostartRemoveFailed, autostartPath, e.Message),
                                     caption: Properties.Settings.Default.AppName, buttons: MessageBoxButtons.OK, icon: MessageBoxIcon.Error);
                     return false;
                 }
@@ -64,7 +64,7 @@ namespace NoSleep
             }
             catch (Exception e)
             {
-                MessageBox.Show(string.Format(Properties.Resources.Msg_AutostartCreateFailed, autostartPath, e.Message),
+                MessageBox.Show(string.Format(Properties.Strings.Msg_AutostartCreateFailed, autostartPath, e.Message),
                                 caption: Properties.Settings.Default.AppName, buttons: MessageBoxButtons.OK, icon: MessageBoxIcon.Error);
                 return false;
             }
