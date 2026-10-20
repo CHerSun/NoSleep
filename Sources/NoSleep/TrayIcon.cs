@@ -29,9 +29,15 @@ namespace NoSleep
         private readonly Timer _refreshTimer;
         /// <summary> Checks running apps and controlls effective state. </summary>
         private readonly Timer _appsWatchTimer;
+        /// <summary> While the inactive icon is shown: watches the Windows color mode to keep the "zzz" visible on dark taskbars. </summary>
+        private readonly Timer _themeWatchTimer;
+        /// <summary> Cadence of <see cref="_themeWatchTimer"/>; matches the app's other timers. </summary>
+        private const int ThemePollIntervalMs = 10000;
         // --- Runtime state ---
         /// <summary> Private flag to show if we found app on the watch list </summary>
         private bool _anyWatchedAppRunning;
+        /// <summary> Last taskbar color mode answer; the poll tick compares against it to skip redundant updates. </summary>
+        private bool? _taskbarLight;
 
         // PROPERTIES
         #region USER SETTINGS (persisted)
@@ -121,13 +127,21 @@ namespace NoSleep
             _appsWatchTimer = new Timer { Interval = Settings.Default.WatchAppsIntervalMs };
             _appsWatchTimer.Tick += AppsWatchTimer_Tick;
 
-            // BEHAVIOR: Set initial Enabled state depending on user preference for persistence between restarts
-            UserEnabled = !Settings.Default.SaveEnabledState || Settings.Default.EnabledState;
+            // Initialize the taskbar color mode watcher (runs only while the inactive icon is shown)
+            _themeWatchTimer = new Timer { Interval = ThemePollIntervalMs };
+            _themeWatchTimer.Tick += ThemeWatchTimer_Tick;
 
             // Initialize application
             Application.ApplicationExit += OnApplicationExit;
             InitializeComponent();
             _trayIcon.Visible = true;
+
+            // BEHAVIOR: Set initial Enabled state depending on user preference for persistence between restarts.
+            // Must run AFTER InitializeComponent: when the persisted state differs, the setter triggers
+            // OnUserSettingsChanged, which needs the menu items and the tray icon to already exist (crashed with
+            // NullReferenceException on startup otherwise).
+            UserEnabled = !Settings.Default.SaveEnabledState || Settings.Default.EnabledState;
+            _menuItem_Enabled.Checked = UserEnabled; // keep the checkbox in sync when the reset above changed the state
 
             // Apply initial state
             OnUserSettingsChanged();
@@ -256,13 +270,14 @@ namespace NoSleep
             UserPersistEnabled = _menuItem_RememberEnabledState.Checked;
         }
 
-        /// <summary> On application exit - hide tray icon, disarm execution state and dispose the timer.</summary>
+        /// <summary> On application exit - hide tray icon, disarm execution state and dispose the timers.</summary>
         private void OnApplicationExit(object sender, EventArgs e)
         {
             _trayIcon.Visible = false;
             DisarmExecutionState();
             _refreshTimer.Dispose();
             _appsWatchTimer.Dispose();
+            _themeWatchTimer.Dispose();
         }
         /// <summary> Event handler for the change of apps list </summary>
         private void OnWatchedAppsChanged()
@@ -286,6 +301,14 @@ namespace NoSleep
                 // This change may affect EffectivePreventSleep
                 ApplySleepPrevention();
             }
+        }
+
+        /// <summary> Taskbar color mode tick - refresh the inactive icon if the user switched light/dark theme.</summary>
+        private void ThemeWatchTimer_Tick(object sender, EventArgs e)
+        {
+            // Skip the icon update while the theme answer is unchanged (the icon is re-applied on every state change anyway).
+            if (!EffectivePreventSleep && _taskbarLight != WinU.IsTaskbarLightTheme())
+                UpdateInactiveTrayIcon();
         }
 
         // PRIVATE METHODS
@@ -348,6 +371,9 @@ namespace NoSleep
         /// <summary> SLEEP PREVENTION: updates timer and app effective state </summary>
         private void ApplySleepPrevention()
         {
+            // The color mode watcher is only needed while the inactive icon is displayed.
+            _themeWatchTimer.Enabled = !EffectivePreventSleep;
+
             if (EffectivePreventSleep)
             {
                 // Arm refresh timer if not already
@@ -365,8 +391,16 @@ namespace NoSleep
                     _refreshTimer.Stop();
                     WinU.SetThreadExecutionState(EXECUTION_STATE.ES_CONTINUOUS); // release
                 }
-                _trayIcon.Icon = Resources.TrayIconInactive;
+                UpdateInactiveTrayIcon();
             }
+        }
+
+        /// <summary> Sets the inactive ("zzz") tray icon, white on dark taskbars so it stays visible (issue #16).
+        /// Always applies: the enabled state overwrites the icon, so it must be re-set on every transition into the inactive state. </summary>
+        private void UpdateInactiveTrayIcon()
+        {
+            _taskbarLight = WinU.IsTaskbarLightTheme();
+            _trayIcon.Icon = _taskbarLight.Value ? Resources.TrayIconInactive : Resources.TrayIconInactiveWhite;
         }
 
     }

@@ -5,10 +5,10 @@
     <Copyright>Copyleft since 2016</Copyright>
     <RepositoryUrl>https://github.com/CHerSun/NoSleep</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
-    <Version>1.5.0</Version>
+    <Version>1.5.1</Version>
     <!-- file info -->
     <AssemblyTitle>A Windows tool to prevent sleep</AssemblyTitle>
-    <FileVersion>1.5.0.0</FileVersion>
+    <FileVersion>1.5.1.0</FileVersion>
     <InformationalVersion>$(Version) (https://github.com/CHerSun/NoSleep)</InformationalVersion>
 
     <!-- COM visibility -->
@@ -104,6 +104,7 @@
     <!-- App manifest and icon -->
     <Content Include="Martin-Berube-Food-Coffee-128.ico" />
     <None Include="Resources\Pictogrammers-Material-Sleep.ico" />
+    <None Include="Resources\Pictogrammers-Material-Sleep-White.ico" />
     <None Include="Resources\Martin-Berube-Food-Coffee-321.ico" />
   </ItemGroup>
 

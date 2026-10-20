@@ -124,6 +124,9 @@
   <data name="TrayIconInactive" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Pictogrammers-Material-Sleep.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="TrayIconInactiveWhite" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Pictogrammers-Material-Sleep-White.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="TrayMenu_Close" xml:space="preserve">
     <value>Close</value>
   </data>
