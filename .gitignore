@@ -392,3 +392,7 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 *.sln.iml
+
+# AI IDE / coding-agent workspace directories
+.trae/
+.zcode/
