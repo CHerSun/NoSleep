@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!--
+    Microsoft ResX Schema
+
+    Version 2.0
+
+    The primary goals of this format is to allow a simple XML format
+    that is mostly human readable. The generation and parsing of the
+    various data types are done through the TypeConverter classes
+    associated with the data types.
+  -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="TrayMenu_Close" xml:space="preserve">
+    <value>Закрыть</value>
+  </data>
+  <data name="TrayMenu_Autostart" xml:space="preserve">
+    <value>Автозапуск при входе</value>
+  </data>
+  <data name="TrayMenu_RememberState" xml:space="preserve">
+    <value>Запоминать состояние</value>
+  </data>
+  <data name="TrayMenu_ConfigureApps" xml:space="preserve">
+    <value>Настроить отслеживаемые программы</value>
+  </data>
+  <data name="TrayMenu_Enabled" xml:space="preserve">
+    <value>Включено</value>
+  </data>
+  <data name="TrayMenu_KeepScreenOn" xml:space="preserve">
+    <value>Держать экран включенным</value>
+  </data>
+  <data name="Tooltip_Autostart" xml:space="preserve">
+    <value>Запускать при входе в систему?</value>
+  </data>
+  <data name="Tooltip_RememberState" xml:space="preserve">
+    <value>Запоминать состояние между перезапусками?</value>
+  </data>
+  <data name="Tooltip_ConfigureApps" xml:space="preserve">
+    <value>Настройте программы, при работе которых экран не будет гаснуть.</value>
+  </data>
+  <data name="Tooltip_Enabled" xml:space="preserve">
+    <value>Включено ли прямо сейчас?</value>
+  </data>
+  <data name="Tooltip_KeepScreenOn" xml:space="preserve">
+    <value>Держать ли дисплей всегда включённым в дополнение к системе.</value>
+  </data>
+  <data name="Msg_InstanceRunning" xml:space="preserve">
+    <value>Экземпляр {0} уже запущен.</value>
+  </data>
+  <data name="Msg_UnknownLanguage" xml:space="preserve">
+    <value>Неизвестный язык: «{0}».</value>
+  </data>
+  <data name="Msg_AvailableLanguages" xml:space="preserve">
+    <value>Доступные языки: {0}</value>
+  </data>
+  <data name="Msg_AutostartRemoveFailed" xml:space="preserve">
+    <value>Не удалось удалить ярлык автозапуска из «{0}». Ошибка: {1}</value>
+  </data>
+  <data name="Msg_AutostartCreateFailed" xml:space="preserve">
+    <value>Не удалось создать ярлык автозапуска в «{0}». Ошибка: {1}</value>
+  </data>
+  <data name="Btn_AppsWatchingEnabled" xml:space="preserve">
+    <value>Отслеживание программ включено</value>
+  </data>
+  <data name="Btn_AppsWatchingDisabled" xml:space="preserve">
+    <value>Отслеживание программ отключено</value>
+  </data>
+  <data name="FileDlg_FilterExecutable" xml:space="preserve">
+    <value>Исполняемые файлы</value>
+  </data>
+  <data name="FileDlg_FilterAllFiles" xml:space="preserve">
+    <value>Все файлы</value>
+  </data>
+  <data name="FileDlg_Title" xml:space="preserve">
+    <value>Выберите исполняемый файл программы</value>
+  </data>
+  <data name="Col_Name" xml:space="preserve">
+    <value>Имя</value>
+  </data>
+  <data name="Col_ExePath" xml:space="preserve">
+    <value>Путь к файлу</value>
+  </data>
+  <data name="Btn_Add" xml:space="preserve">
+    <value>➕ Добавить</value>
+  </data>
+  <data name="Btn_Remove" xml:space="preserve">
+    <value>➖ Убрать</value>
+  </data>
+  <data name="Btn_Enable" xml:space="preserve">
+    <value>Включить</value>
+  </data>
+  <data name="Btn_Disable" xml:space="preserve">
+    <value>Отключить</value>
+  </data>
+  <data name="Btn_Close" xml:space="preserve">
+    <value>Закрыть</value>
+  </data>
+  <data name="Form_Title" xml:space="preserve">
+    <value>Настройка отслеживаемых программ</value>
+  </data>
+</root>

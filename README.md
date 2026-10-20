@@ -1,4 +1,4 @@
-> 🌐 Languages: [English](README.md) | [简体中文](README.zh-CN.md)
+> 🌐 Languages: [English](README.md) | [Русский](README.ru.md) | [简体中文](README.zh-CN.md)
 
 # NoSleep
 
@@ -15,7 +15,10 @@ scoop bucket add extras
 scoop install extras/nosleep
 ```
 
-Alternatively, you can download the latest release manually from [the releases page](https://github.com/CHerSun/NoSleep/releases/latest).
+Alternatively, you can download the latest release manually from [the releases page](https://github.com/CHerSun/NoSleep/releases/latest). Releases carry three executables:
+
+- **`NoSleep.exe`** — the default build for everyone (runs on .NET Framework 4.8, preinstalled on Windows).
+- **`NoSleep-net8.exe`** / **`NoSleep-net10.exe`** — single-file builds for users who already have the .NET 8 or .NET 10 runtime.
 
 ## Usage
 
@@ -31,6 +34,18 @@ NoSleep is designed to be "set and forget". Once running, it sits in the Windows
 
 To completely stop NoSleep, right‑click the tray icon and select **Close**.
 
+### Language
+
+The interface automatically follows your Windows display language among **English, Русский and 简体中文**. To pick a language explicitly, launch with the `--lang` flag:
+
+```sh
+NoSleep.exe --lang ru        # Russian for this run
+NoSleep.exe --lang zh-CN     # Simplified Chinese
+NoSleep.exe --lang list      # show the available languages
+```
+
+To make the choice permanent, add the flag to the target of your NoSleep shortcut.
+
 ### Behavior Matrix
 
 | Enabled | Keep Screen On | System Behavior                          | Display Behavior |
@@ -41,7 +56,8 @@ To completely stop NoSleep, right‑click the tray icon and select **Close**.
 
 ## Requirements
 
-- .NET Framework 4.8 or later (4.x branch). This is typically preinstalled on Windows 10 and later. If needed, you can download it from [Microsoft](https://dotnet.microsoft.com/en-us/download/dotnet-framework).
+- **`NoSleep.exe`** (default): .NET Framework 4.8 or later — typically preinstalled on Windows 10 and later; if needed, downloadable from [Microsoft](https://dotnet.microsoft.com/en-us/download/dotnet-framework).
+- **`NoSleep-net8.exe` / `NoSleep-net10.exe`**: the respective .NET runtime installed.
 
 ## How It Works
 

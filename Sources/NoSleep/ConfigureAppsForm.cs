@@ -29,8 +29,8 @@ namespace NoSleep
         {
             using (var dlg = new OpenFileDialog())
             {
-                dlg.Filter = Resources.FileDlg_FilterExecutable + "|*.exe|" + Resources.FileDlg_FilterAllFiles + "|*.*";
-                dlg.Title = Resources.FileDlg_Title;
+                dlg.Filter = Strings.FileDlg_FilterExecutable + "|*.exe|" + Strings.FileDlg_FilterAllFiles + "|*.*";
+                dlg.Title = Strings.FileDlg_Title;
                 if (dlg.ShowDialog(this) != DialogResult.OK)
                     return;
 
@@ -51,8 +51,9 @@ namespace NoSleep
 
         private void UpdateEnabledState(bool enabled)
         {
-            buttonEnable.Text = enabled ? Resources.Btn_AppsWatchingEnabled : Resources.Btn_AppsWatchingDisabled;
-            buttonEnable.BackColor = enabled ? Color.LightGreen : Color.Coral;
+            labelWatchState.Text = enabled ? Strings.Btn_AppsWatchingEnabled : Strings.Btn_AppsWatchingDisabled;
+            labelWatchState.ForeColor = enabled ? Color.DarkGreen : Color.Firebrick;
+            buttonEnable.Text = enabled ? Strings.Btn_Disable : Strings.Btn_Enable;
             mainForm.UserWatchingEnabled = enabled;
         }
         private void ButtonEnable_Click(object sender, EventArgs e)

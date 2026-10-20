@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -160,6 +160,12 @@
   <data name="Msg_InstanceRunning" xml:space="preserve">
     <value>{0} instance is already running.</value>
   </data>
+  <data name="Msg_UnknownLanguage" xml:space="preserve">
+    <value>Unknown language: '{0}'.</value>
+  </data>
+  <data name="Msg_AvailableLanguages" xml:space="preserve">
+    <value>Available languages: {0}</value>
+  </data>
   <data name="Msg_AutostartRemoveFailed" xml:space="preserve">
     <value>Wasn't able to remove autostart shortcut from '{0}'. Error: {1}</value>
   </data>
@@ -170,7 +176,7 @@
     <value>Apps watching is enabled</value>
   </data>
   <data name="Btn_AppsWatchingDisabled" xml:space="preserve">
-    <value>Apps watching is DISABLED ❌</value>
+    <value>Apps watching is disabled</value>
   </data>
   <data name="FileDlg_FilterExecutable" xml:space="preserve">
     <value>Executable</value>
@@ -195,6 +201,9 @@
   </data>
   <data name="Btn_Enable" xml:space="preserve">
     <value>Enable</value>
+  </data>
+  <data name="Btn_Disable" xml:space="preserve">
+    <value>Disable</value>
   </data>
   <data name="Btn_Close" xml:space="preserve">
     <value>Close</value>

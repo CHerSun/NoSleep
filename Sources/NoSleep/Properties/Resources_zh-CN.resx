@@ -104,6 +104,12 @@
   <data name="Msg_InstanceRunning" xml:space="preserve">
     <value>{0} 实例已在运行。</value>
   </data>
+  <data name="Msg_UnknownLanguage" xml:space="preserve">
+    <value>未知语言:'{0}'。</value>
+  </data>
+  <data name="Msg_AvailableLanguages" xml:space="preserve">
+    <value>可用语言:{0}</value>
+  </data>
   <data name="Msg_AutostartRemoveFailed" xml:space="preserve">
     <value>无法从 '{0}' 移除自启动快捷方式。错误:{1}</value>
   </data>
@@ -114,7 +120,7 @@
     <value>应用监视已启用</value>
   </data>
   <data name="Btn_AppsWatchingDisabled" xml:space="preserve">
-    <value>应用监视已禁用 ❌</value>
+    <value>应用监视已禁用</value>
   </data>
   <data name="FileDlg_FilterExecutable" xml:space="preserve">
     <value>可执行文件</value>
@@ -139,6 +145,9 @@
   </data>
   <data name="Btn_Enable" xml:space="preserve">
     <value>启用</value>
+  </data>
+  <data name="Btn_Disable" xml:space="preserve">
+    <value>禁用</value>
   </data>
   <data name="Btn_Close" xml:space="preserve">
     <value>关闭</value>

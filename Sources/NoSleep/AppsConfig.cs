@@ -21,9 +21,12 @@ namespace NoSleep
     {
         public static List<AppEntry> Load()
         {
-            var AppsList = new List<AppEntry>(Settings.Default.WatchedApps.Count);
-            foreach (var app in Settings.Default.WatchedApps)
-                AppsList.Add(AppEntry.FromExePath(app));
+            // WatchedApps may deserialize as null (e.g. corrupted user.config) - treat it as an empty list
+            var watchedApps = Settings.Default.WatchedApps;
+            var AppsList = new List<AppEntry>(watchedApps?.Count ?? 0);
+            if (watchedApps != null)
+                foreach (var app in watchedApps)
+                    AppsList.Add(AppEntry.FromExePath(app));
             return AppsList;
         }
 

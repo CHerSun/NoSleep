@@ -1,14 +1,14 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <!-- Project metadata -->
     <Product>NoSleep</Product>
     <Copyright>Copyleft since 2016</Copyright>
     <RepositoryUrl>https://github.com/CHerSun/NoSleep</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
-    <Version>1.4.2</Version>
+    <Version>1.5.0</Version>
     <!-- file info -->
     <AssemblyTitle>A Windows tool to prevent sleep</AssemblyTitle>
-    <FileVersion>1.4.2.0</FileVersion>
+    <FileVersion>1.5.0.0</FileVersion>
     <InformationalVersion>$(Version) (https://github.com/CHerSun/NoSleep)</InformationalVersion>
 
     <!-- COM visibility -->
@@ -21,7 +21,7 @@
 
     <!-- Build options -->
     <OutputType>WinExe</OutputType>
-    <TargetFrameworks>net48;net8.0-windows</TargetFrameworks>
+    <TargetFrameworks>net48;net8.0-windows;net10.0-windows</TargetFrameworks>
     <UseWindowsForms>true</UseWindowsForms>
     <RootNamespace>NoSleep</RootNamespace>
     <ApplicationIcon>Martin-Berube-Food-Coffee-128.ico</ApplicationIcon>
@@ -29,14 +29,14 @@
     <!-- Disable automatic inclusion of compile/resource items -->
     <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
     <EnableDefaultEmbeddedResourceItems>false</EnableDefaultEmbeddedResourceItems>
-    <!-- Single-file publishing settings for .NET 8.0 (ignored for .NET Framework) -->
-    <PublishSingleFile Condition="'$(TargetFramework)' == 'net8.0-windows'">true</PublishSingleFile>
-    <SelfContained Condition="'$(TargetFramework)' == 'net8.0-windows'">false</SelfContained>
+    <!-- Single-file publishing settings for modern .NET targets (ignored for .NET Framework) -->
+    <PublishSingleFile Condition="'$(TargetFramework)' != 'net48'">true</PublishSingleFile>
+    <SelfContained Condition="'$(TargetFramework)' != 'net48'">false</SelfContained>
   </PropertyGroup>
 
   <ItemGroup>
-      <!-- Required for dynamic COM interop (IWshRuntimeLibrary for shortcut creation) -->
-      <PackageReference Include="Microsoft.CSharp" Version="4.7.0" Condition="'$(TargetFramework)' == 'net8.0-windows'" />
+      <!-- Required for dynamic COM interop (IWshRuntimeLibrary for shortcut creation):
+           GAC assembly on net48, inbox in modern .NET shared frameworks -->
       <Reference Include="Microsoft.CSharp" Condition="'$(TargetFramework)' == 'net48'" />
   </ItemGroup>
 
@@ -58,6 +58,9 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="Properties\Strings.cs">
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
     <Compile Include="Properties\Settings.Designer.cs">
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <AutoGen>True</AutoGen>
@@ -75,7 +78,16 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="Properties\Resources.zh-CN.resx">
+    <!-- Localized string resources are embedded into the main assembly (explicit LogicalName)
+         instead of building satellite DLLs: the published artifact is the bare executable,
+         so satellite assemblies would never reach end users. Underscore file names keep
+         MSBuild's AssignCulture from recognizing them as culture resources. -->
+    <EmbeddedResource Include="Properties\Resources_ru.resx">
+      <LogicalName>NoSleep.Properties.Resources.ru.resources</LogicalName>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources_zh-CN.resx">
+      <LogicalName>NoSleep.Properties.Resources.zh-CN.resources</LogicalName>
       <DependentUpon>Resources.resx</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
@@ -95,19 +107,14 @@
     <None Include="Resources\Martin-Berube-Food-Coffee-321.ico" />
   </ItemGroup>
 
-  <!-- For .NET 8.0, add the ConfigurationManager package to support Settings -->
-  <ItemGroup Condition="'$(TargetFramework)' == 'net8.0-windows'">
-    <PackageReference Include="System.Configuration.ConfigurationManager" Version="8.0.0" />
-  </ItemGroup>
-
-  <!-- automatic publishing for .NET 8.0 release build -->
-  <Target Name="PublishAfterBuild" AfterTargets="Build" Condition="'$(Configuration)' == 'Release' And '$(TargetFramework)' == 'net8.0-windows' And '$(SkipPublish)' != 'true'">
-    <Exec Command="dotnet publish $(MSBuildProjectFile) -c Release -f net8.0-windows -p:SkipPublish=true " />
+  <!-- automatic single-file publishing for modern .NET release builds -->
+  <Target Name="PublishAfterBuild" AfterTargets="Build" Condition="'$(Configuration)' == 'Release' And '$(TargetFramework)' != 'net48' And '$(SkipPublish)' != 'true'">
+    <Exec Command="dotnet publish $(MSBuildProjectFile) -c Release -f $(TargetFramework) -p:SkipPublish=true " />
   </Target>
 
 
   <PropertyGroup>
-      <!-- Disable the build warning to move high dpi awareness away from app.manifest. This doesn't work for multitargeting .NET 4.8 and .NET 8.0 -->
-    <NoWarn>$(NoWarn);WFAC010</NoWarn>
+      <!-- Disable the build warnings to move high dpi awareness away from app.manifest. This doesn't work for multitargeting .NET 4.8 and modern .NET (WFAC010 on net8, WFO0003 on net10) -->
+    <NoWarn>$(NoWarn);WFAC010;WFO0003</NoWarn>
   </PropertyGroup>
 </Project>
