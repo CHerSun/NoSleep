@@ -1,24 +1,25 @@
-> 🌐 Languages: [English](BUILD.md) | [简体中文](BUILD.zh-CN.md)
+> 🌐 Languages: [English](BUILD.md) | [Русский](BUILD.ru.md) | [简体中文](BUILD.zh-CN.md)
 
 # How to Build from Source Code
 
 This document describes how to build NoSleep from source code. These instructions are intended for developers who want to contribute or experiment with the codebase.
 
-The solution uses WinForms and targets two frameworks:
+The solution uses WinForms and targets three frameworks:
 
-- net48 – .NET Framework 4.8 (legacy)
+- net48 – .NET Framework 4.8 (legacy, primary)
 - net8.0-windows – .NET 8.0 (Windows-specific)
+- net10.0-windows – .NET 10.0 (Windows-specific, current LTS)
 
 The goal is to build a single standalone executable of small size (i.e., we can publish a single file; the executable does not contain the .NET runtime) for simple distribution.
 
 NoSleep was originally built using the .NET 4.x framework. Since .NET 4.x comes bundled with Windows, normally no extra steps are required from the end user.
 
-.NET 8.0 was added during project modernization to make future updates easier.
+.NET 8.0 was added during project modernization to make future updates easier, and .NET 10.0 joined later as the current LTS — the modern targets are part of a gradual migration away from legacy .NET Framework.
 
 ## Prerequisites
 
 - Windows (required because the application is Windows‑only)
-- For .NET 8.0 build:
+- For modern .NET builds (net8.0 / net10.0):
   - .NET SDK 8.0 or later
 - For .NET Framework 4.8 (legacy):
   - .NET SDK (any recent version)
@@ -43,7 +44,8 @@ cd NoSleep
 
 - .NET Framework 4.8 - `Sources/NoSleep/bin/Debug/net48/` or `Sources/NoSleep/bin/Release/net48/`
 - .NET 8.0 - `Sources/NoSleep/bin/Debug/net8.0-windows/` or `Sources/NoSleep/bin/Release/net8.0-windows/`
-- Published (single executable) .NET 8.0 - `Sources/NoSleep/bin/Release/net8.0-windows/win-x64/publish`
+- .NET 10.0 - `Sources/NoSleep/bin/Debug/net10.0-windows/` or `Sources/NoSleep/bin/Release/net10.0-windows/`
+- Published (single executable) modern .NET - `Sources/NoSleep/bin/Release/<framework>/win-x64/publish`
 
 ## Building with Visual Studio
 
@@ -51,7 +53,7 @@ This is the easiest way to build the solution. Simply open `Sources/NoSleep.sln`
 
 ## Building from the Command Line
 
-### Build .NET 8.0 Version
+### Build .NET 8.0 / .NET 10.0 Version
 
 Use the `dotnet build` command. To build the debug version:
 
@@ -65,9 +67,10 @@ For the release version:
 ```sh
 cd Sources
 dotnet build -f net8.0-windows -c Release
+dotnet build -f net10.0-windows -c Release
 ```
 
-Note: The publish step (to create a single executable) is triggered automatically after the release build of `net8.0-windows` is complete.
+Note: The publish step (to create a single executable) is triggered automatically after the release build of a modern .NET target is complete.
 
 ### Build .NET Framework 4.8 Version
 

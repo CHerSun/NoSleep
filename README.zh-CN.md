@@ -1,4 +1,4 @@
-> 🌐 语言:[English](README.md) | [简体中文](README.zh-CN.md)
+> 🌐 语言:[English](README.md) | [Русский](README.ru.md) | [简体中文](README.zh-CN.md)
 
 # NoSleep
 
@@ -15,7 +15,10 @@ scoop bucket add extras
 scoop install extras/nosleep
 ```
 
-你也可以从[发布页面](https://github.com/CHerSun/NoSleep/releases/latest)手动下载最新版本。
+你也可以从[发布页面](https://github.com/CHerSun/NoSleep/releases/latest)手动下载最新版本。发布包含三个可执行文件:
+
+- **`NoSleep.exe`** — 面向所有用户的默认版本(基于 .NET Framework 4.8 运行,Windows 已预装)。
+- **`NoSleep-net8.exe`** / **`NoSleep-net10.exe`** — 面向已安装 .NET 8 或 .NET 10 运行时的单文件版本。
 
 ## 使用方法
 
@@ -31,6 +34,18 @@ NoSleep 采用"设置后即忘"的设计。一旦运行,它会驻留在 Windows 
 
 要完全停止 NoSleep,请右键单击托盘图标并选择 **关闭**。
 
+### 语言
+
+界面会自动跟随 Windows 显示语言,在 **English、Русский 和 简体中文** 之间选择。如需显式指定语言,可使用 `--lang` 参数启动:
+
+```sh
+NoSleep.exe --lang zh-CN     # 本次运行使用简体中文
+NoSleep.exe --lang ru        # 俄语
+NoSleep.exe --lang list      # 显示可用语言
+```
+
+要固定语言选择,请将参数添加到 NoSleep 快捷方式的目标中。
+
 ### 行为矩阵
 
 | 启用 | 保持屏幕常亮 | 系统行为                          | 显示器行为       |
@@ -41,7 +56,8 @@ NoSleep 采用"设置后即忘"的设计。一旦运行,它会驻留在 Windows 
 
 ## 系统要求
 
-- .NET Framework 4.8 或更高版本(4.x 分支)。通常在 Windows 10 及更高版本中已预装。如需安装,可从 [Microsoft](https://dotnet.microsoft.com/en-us/download/dotnet-framework) 下载。
+- **`NoSleep.exe`**(默认版本):.NET Framework 4.8 或更高版本——通常在 Windows 10 及更高版本中已预装。如需安装,可从 [Microsoft](https://dotnet.microsoft.com/en-us/download/dotnet-framework) 下载。
+- **`NoSleep-net8.exe`** / **`NoSleep-net10.exe`**:需要安装对应的 .NET 运行时。
 
 ## 工作原理
 

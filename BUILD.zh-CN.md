@@ -1,24 +1,25 @@
-> 🌐 语言:[English](BUILD.md) | [简体中文](BUILD.zh-CN.md)
+> 🌐 语言:[English](BUILD.md) | [Русский](BUILD.ru.md) | [简体中文](BUILD.zh-CN.md)
 
 # 如何从源代码构建
 
 本文档描述了如何从源代码构建 NoSleep。这些说明面向希望为项目贡献代码或对代码库进行试验的开发者。
 
-该解决方案使用 WinForms,并以两个框架为目标:
+该解决方案使用 WinForms,并以三个框架为目标:
 
-- net48 – .NET Framework 4.8(旧版)
+- net48 – .NET Framework 4.8(旧版,主要目标)
 - net8.0-windows – .NET 8.0(Windows 专用)
+- net10.0-windows – .NET 10.0(Windows 专用,当前 LTS)
 
 目标是构建一个体积较小的独立可执行文件(即我们可以发布单文件;可执行文件本身不包含 .NET 运行时),以便于简单分发。
 
 NoSleep 最初使用 .NET 4.x 框架构建。由于 .NET 4.x 随 Windows 一起捆绑,通常终端用户无需进行额外操作。
 
-在项目现代化过程中添加了 .NET 8.0,以便更轻松地进行未来的更新。
+在项目现代化过程中添加了 .NET 8.0,以便更轻松地进行未来的更新;.NET 10.0 随后作为当前 LTS 加入——现代目标是逐步迁离旧版 .NET Framework 的一部分。
 
 ## 先决条件
 
 - Windows(必需,因为该应用程序仅支持 Windows)
-- 对于 .NET 8.0 构建:
+- 对于现代 .NET 构建(net8.0 / net10.0):
   - .NET SDK 8.0 或更高版本
 - 对于 .NET Framework 4.8(旧版):
   - .NET SDK(任意较新版本)
@@ -43,7 +44,8 @@ cd NoSleep
 
 - .NET Framework 4.8 - `Sources/NoSleep/bin/Debug/net48/` 或 `Sources/NoSleep/bin/Release/net48/`
 - .NET 8.0 - `Sources/NoSleep/bin/Debug/net8.0-windows/` 或 `Sources/NoSleep/bin/Release/net8.0-windows/`
-- 已发布(单可执行文件)的 .NET 8.0 - `Sources/NoSleep/bin/Release/net8.0-windows/win-x64/publish`
+- .NET 10.0 - `Sources/NoSleep/bin/Debug/net10.0-windows/` 或 `Sources/NoSleep/bin/Release/net10.0-windows/`
+- 已发布(单可执行文件)的现代 .NET - `Sources/NoSleep/bin/Release/<框架>/win-x64/publish`
 
 ## 使用 Visual Studio 构建
 
@@ -51,7 +53,7 @@ cd NoSleep
 
 ## 从命令行构建
 
-### 构建 .NET 8.0 版本
+### 构建 .NET 8.0 / .NET 10.0 版本
 
 使用 `dotnet build` 命令。要构建调试版本:
 
@@ -65,9 +67,10 @@ dotnet build -f net8.0-windows -c Debug
 ```sh
 cd Sources
 dotnet build -f net8.0-windows -c Release
+dotnet build -f net10.0-windows -c Release
 ```
 
-注意:在 `net8.0-windows` 的发布构建完成后,会自动触发发布步骤(以创建单可执行文件)。
+注意:在现代 .NET 目标的发布构建完成后,会自动触发发布步骤(以创建单可执行文件)。
 
 ### 构建 .NET Framework 4.8 版本
 

@@ -1,4 +1,4 @@
-> 🌐 Languages: [English](CONTRIBUTING.md) | [简体中文](CONTRIBUTING.zh-CN.md)
+> 🌐 Languages: [English](CONTRIBUTING.md) | [Русский](CONTRIBUTING.ru.md) | [简体中文](CONTRIBUTING.zh-CN.md)
 
 # Contributing to NoSleep
 
@@ -30,7 +30,7 @@ To keep the project consistent and maintainable, please adhere to the following 
 
 ### 2. Target a Single Executable
 
-- The build process must produce a single standalone executable (for both .NET Framework 4.8 and .NET 8.0 targets).
+- The build process must produce a single standalone executable (for every target: .NET Framework 4.8, .NET 8.0 and .NET 10.0).
 - If your changes make it impossible to package into a single executable - please explain why that is necessary.
 
 ### 3. Keep It Lean
@@ -43,9 +43,15 @@ Avoid unnecessary overhead:
 
 ### 4. Maintain Cross‑Framework Compatibility
 
-- NoSleep targets both .NET Framework 4.8 and .NET 8.0-windows.
-- When adding new features or making changes, ensure they work on both frameworks.
-- Use preprocessor directives (`#if NETFRAMEWORK` / `#if NET`) where necessary, but prefer code that works on both without conditional compilation.
+- NoSleep targets .NET Framework 4.8 plus the two latest .NET LTS versions (`net8.0-windows`, `net10.0-windows`).
+- When adding new features or making changes, ensure they work on all frameworks.
+- Use preprocessor directives (`#if NETFRAMEWORK` / `#if NET`) where necessary, but prefer code that works everywhere without conditional compilation.
+
+### 5. Localization
+
+- User-facing strings live in `Sources/NoSleep/Properties/Resources*.resx` (English neutral, `ru`, `zh-CN`) and are accessed through `NoSleep.Properties.Strings`. Don't hardcode UI strings in code.
+- All languages are embedded into the main assembly (no satellite DLLs) — keep the underscore file naming and explicit `LogicalName` pattern in the csproj.
+- Adding a language is just a new `Resources_xx.resx` file plus its `EmbeddedResource` entry: the culture picker, the English fallback and the `--lang list` output adapt automatically.
 
 ## Testing Your Changes
 

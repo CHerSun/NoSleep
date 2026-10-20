@@ -1,4 +1,4 @@
-> 🌐 语言:[English](CONTRIBUTING.md) | [简体中文](CONTRIBUTING.zh-CN.md)
+> 🌐 语言:[English](CONTRIBUTING.md) | [Русский](CONTRIBUTING.ru.md) | [简体中文](CONTRIBUTING.zh-CN.md)
 
 # 贡献 NoSleep
 
@@ -30,7 +30,7 @@
 
 ### 2. 目标为单一可执行文件
 
-- 构建过程必须生成一个独立的可执行文件(同时支持 .NET Framework 4.8 和 .NET 8.0 目标)。
+- 构建过程必须生成一个独立的可执行文件(适用于所有目标:.NET Framework 4.8、.NET 8.0 和 .NET 10.0)。
 - 如果您的更改导致无法打包为单一可执行文件,请说明为何必须如此。
 
 ### 3. 保持精简
@@ -43,13 +43,19 @@
 
 ### 4. 保持跨框架兼容性
 
-- NoSleep 同时支持 .NET Framework 4.8 和 .NET 8.0-windows。
-- 在添加新功能或进行更改时,请确保它们在两个框架上都能正常工作。
-- 在必要时使用预处理器指令(`#if NETFRAMEWORK` / `#if NET`),但优先选择无需条件编译即可在两个框架上通用的代码。
+- NoSleep 支持 .NET Framework 4.8 以及两个最新的 .NET LTS 版本(`net8.0-windows`、`net10.0-windows`)。
+- 在添加新功能或进行更改时,请确保它们在所有框架上都能正常工作。
+- 在必要时使用预处理器指令(`#if NETFRAMEWORK` / `#if NET`),但优先选择无需条件编译即可在所有框架上通用的代码。
+
+### 5. 本地化
+
+- 面向用户的字符串位于 `Sources/NoSleep/Properties/Resources*.resx`(中性英语、`ru`、`zh-CN`),并通过 `NoSleep.Properties.Strings` 访问。请勿将界面字符串硬编码在代码中。
+- 所有语言都嵌入主程序集(无附属 DLL)——请保持 csproj 中带下划线的文件命名和显式 `LogicalName` 模式。
+- 添加一门语言只需新增 `Resources_xx.resx` 文件及其 `EmbeddedResource` 条目:区域文化选择、英语回退和 `--lang list` 输出都会自动适配。
 
 ## 测试您的更改
 
-- 在两个目标框架上测试您的更改(Debug 和 Release 配置)。
+- 在所有目标框架上测试您的更改(Debug 和 Release 配置)。
 - 验证生成的可执行文件能否按预期运行,并且没有引入新的问题。
 - 如果您要添加功能,请考虑是否需要相应的测试(尽管本项目目前没有正式的测试套件,但仍感谢您进行手动验证)。
 
