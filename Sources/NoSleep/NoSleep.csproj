@@ -104,6 +104,7 @@
     <!-- App manifest and icon -->
     <Content Include="Martin-Berube-Food-Coffee-128.ico" />
     <None Include="Resources\Pictogrammers-Material-Sleep.ico" />
+    <None Include="Resources\Pictogrammers-Material-Sleep-White.ico" />
     <None Include="Resources\Martin-Berube-Food-Coffee-321.ico" />
   </ItemGroup>
 

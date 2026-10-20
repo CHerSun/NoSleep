@@ -29,9 +29,15 @@ namespace NoSleep
         private readonly Timer _refreshTimer;
         /// <summary> Checks running apps and controlls effective state. </summary>
         private readonly Timer _appsWatchTimer;
+        /// <summary> While the inactive icon is shown: watches the Windows color mode to keep the "zzz" visible on dark taskbars. </summary>
+        private readonly Timer _themeWatchTimer;
+        /// <summary> Cadence of <see cref="_themeWatchTimer"/>; matches the app's other timers. </summary>
+        private const int ThemePollIntervalMs = 10000;
         // --- Runtime state ---
         /// <summary> Private flag to show if we found app on the watch list </summary>
         private bool _anyWatchedAppRunning;
+        /// <summary> Last taskbar color mode answer; used to touch the tray icon only when it actually changes. </summary>
+        private bool? _taskbarLight;
 
         // PROPERTIES
         #region USER SETTINGS (persisted)
@@ -120,6 +126,10 @@ namespace NoSleep
             // Initialize the apps watching timer
             _appsWatchTimer = new Timer { Interval = Settings.Default.WatchAppsIntervalMs };
             _appsWatchTimer.Tick += AppsWatchTimer_Tick;
+
+            // Initialize the taskbar color mode watcher (runs only while the inactive icon is shown)
+            _themeWatchTimer = new Timer { Interval = ThemePollIntervalMs };
+            _themeWatchTimer.Tick += ThemeWatchTimer_Tick;
 
             // BEHAVIOR: Set initial Enabled state depending on user preference for persistence between restarts
             UserEnabled = !Settings.Default.SaveEnabledState || Settings.Default.EnabledState;
@@ -256,13 +266,14 @@ namespace NoSleep
             UserPersistEnabled = _menuItem_RememberEnabledState.Checked;
         }
 
-        /// <summary> On application exit - hide tray icon, disarm execution state and dispose the timer.</summary>
+        /// <summary> On application exit - hide tray icon, disarm execution state and dispose the timers.</summary>
         private void OnApplicationExit(object sender, EventArgs e)
         {
             _trayIcon.Visible = false;
             DisarmExecutionState();
             _refreshTimer.Dispose();
             _appsWatchTimer.Dispose();
+            _themeWatchTimer.Dispose();
         }
         /// <summary> Event handler for the change of apps list </summary>
         private void OnWatchedAppsChanged()
@@ -286,6 +297,13 @@ namespace NoSleep
                 // This change may affect EffectivePreventSleep
                 ApplySleepPrevention();
             }
+        }
+
+        /// <summary> Taskbar color mode tick - refresh the inactive icon if the user switched light/dark theme.</summary>
+        private void ThemeWatchTimer_Tick(object sender, EventArgs e)
+        {
+            if (!EffectivePreventSleep)
+                UpdateInactiveTrayIcon();
         }
 
         // PRIVATE METHODS
@@ -348,6 +366,9 @@ namespace NoSleep
         /// <summary> SLEEP PREVENTION: updates timer and app effective state </summary>
         private void ApplySleepPrevention()
         {
+            // The color mode watcher is only needed while the inactive icon is displayed.
+            _themeWatchTimer.Enabled = !EffectivePreventSleep;
+
             if (EffectivePreventSleep)
             {
                 // Arm refresh timer if not already
@@ -365,8 +386,19 @@ namespace NoSleep
                     _refreshTimer.Stop();
                     WinU.SetThreadExecutionState(EXECUTION_STATE.ES_CONTINUOUS); // release
                 }
-                _trayIcon.Icon = Resources.TrayIconInactive;
+                UpdateInactiveTrayIcon();
             }
+        }
+
+        /// <summary> Sets the inactive ("zzz") tray icon, white on dark taskbars so it stays visible (issue #16).
+        /// Touches the icon only when the color mode answer actually changes. </summary>
+        private void UpdateInactiveTrayIcon()
+        {
+            bool light = WinU.IsTaskbarLightTheme();
+            if (_taskbarLight == light)
+                return;
+            _taskbarLight = light;
+            _trayIcon.Icon = light ? Resources.TrayIconInactive : Resources.TrayIconInactiveWhite;
         }
 
     }

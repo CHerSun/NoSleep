@@ -80,6 +80,16 @@ namespace NoSleep.Properties {
             }
         }
 
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
+        /// </summary>
+        internal static System.Drawing.Icon TrayIconInactiveWhite {
+            get {
+                object obj = ResourceManager.GetObject("TrayIconInactiveWhite", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
+
         /// <summary>Tray menu: Close</summary>
         internal static string TrayMenu_Close {
             get { return ResourceManager.GetString("TrayMenu_Close", resourceCulture); }

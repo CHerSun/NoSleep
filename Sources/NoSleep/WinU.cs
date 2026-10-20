@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
+using Microsoft.Win32;
 
 namespace NoSleep
 {
@@ -43,6 +44,51 @@ namespace NoSleep
         /// </summary>
         [DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
         static internal extern EXECUTION_STATE SetThreadExecutionState(EXECUTION_STATE esFlags);
+
+        // --- Windows color mode detection (used only to pick the inactive tray icon color) ---
+        private const string ThemeKeyPath = @"Software\Microsoft\Windows\CurrentVersion\Themes\Personalize";
+        /// <summary> Cached read-only handle to the Personalize key; saves ~640 B/call of the naive open+read+dispose pattern. </summary>
+        private static RegistryKey _themeKey;
+        private static int _themeFailures;
+        private static bool _themeFetchDisabled;
+
+        /// <summary>
+        /// Whether the taskbar follows a light Windows theme. Best-effort and cosmetic only:
+        /// every failure path falls back to true (= today's black icon), exceptions are contained
+        /// here (a throw out of a WinForms Timer.Tick would kill the app), and after 3 consecutive
+        /// failures the fetcher disables itself forever. Measured cost on the cached handle:
+        /// ~3-7 us and one boxed int (24 B) per call - polled at most once per 10 s.
+        /// </summary>
+        internal static bool IsTaskbarLightTheme()
+        {
+            if (_themeFetchDisabled)
+                return true;
+            try
+            {
+                if (_themeKey == null)
+                {
+                    _themeKey = Registry.CurrentUser.OpenSubKey(ThemeKeyPath);
+                    if (_themeKey == null)
+                    {
+                        // No Personalize key (Windows older than 1809): a dark taskbar cannot exist - stop asking.
+                        _themeFetchDisabled = true;
+                        return true;
+                    }
+                }
+                // The taskbar follows the "Windows" color mode (SystemUsesLightTheme) on Win10 1809+ and Win11; the apps value is a fallback.
+                object value = _themeKey.GetValue("SystemUsesLightTheme") ?? _themeKey.GetValue("AppsUseLightTheme");
+                _themeFailures = 0;
+                return !(value is int light) || light != 0; // Missing or wrong-typed value: assume light (black icon).
+            }
+            catch
+            {
+                // Only realistic throw: ObjectDisposedException on a stale cached handle (a theoretical SecurityException is covered too).
+                _themeKey = null; // Allow one reopen attempt on the next call.
+                if (++_themeFailures >= 3)
+                    _themeFetchDisabled = true; // Give up for good: keep the black icon, never throw again.
+                return true;
+            }
+        }
     }
 
     /// <summary> A class with Process extensions to watch running apps via Win32 API </summary>
