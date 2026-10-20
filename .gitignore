@@ -396,3 +396,6 @@ FodyWeavers.xsd
 # AI IDE / coding-agent workspace directories
 .trae/
 .zcode/
+
+# Per-machine environment notes for AI agents (see AGENTS.md)
+ENVIRONMENT.md

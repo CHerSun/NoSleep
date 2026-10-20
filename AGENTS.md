@@ -2,6 +2,10 @@
 
 NoSleep is a lightweight, open-source (The Unlicense) C#/WinForms tray utility for Windows that prevents sleep/screensaver/lock by calling `SetThreadExecutionState` on a timer. Think "Caffeine for Windows, but minimal": no admin rights, no installer, no runtime download for the primary target.
 
+## Local environment notes
+
+Machine-specific quirks of the current dev machine (shell behavior, absolute tool paths, testing gotchas) live in **`ENVIRONMENT.md`** at the repo root — a gitignored, per-machine file. Read it if it exists; never commit it.
+
 ## Non-negotiable constraints
 
 These rules come from the maintainer. Violating any of them requires explicit human approval **before** the change is made.
