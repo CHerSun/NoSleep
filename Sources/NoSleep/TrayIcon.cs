@@ -131,13 +131,17 @@ namespace NoSleep
             _themeWatchTimer = new Timer { Interval = ThemePollIntervalMs };
             _themeWatchTimer.Tick += ThemeWatchTimer_Tick;
 
-            // BEHAVIOR: Set initial Enabled state depending on user preference for persistence between restarts
-            UserEnabled = !Settings.Default.SaveEnabledState || Settings.Default.EnabledState;
-
             // Initialize application
             Application.ApplicationExit += OnApplicationExit;
             InitializeComponent();
             _trayIcon.Visible = true;
+
+            // BEHAVIOR: Set initial Enabled state depending on user preference for persistence between restarts.
+            // Must run AFTER InitializeComponent: when the persisted state differs, the setter triggers
+            // OnUserSettingsChanged, which needs the menu items and the tray icon to already exist (crashed with
+            // NullReferenceException on startup otherwise).
+            UserEnabled = !Settings.Default.SaveEnabledState || Settings.Default.EnabledState;
+            _menuItem_Enabled.Checked = UserEnabled; // keep the checkbox in sync when the reset above changed the state
 
             // Apply initial state
             OnUserSettingsChanged();
