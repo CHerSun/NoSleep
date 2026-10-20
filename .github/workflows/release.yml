@@ -15,13 +15,13 @@ jobs:
     runs-on: windows-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Setup MSBuild
-        uses: microsoft/setup-msbuild@v2
+        uses: microsoft/setup-msbuild@v3
 
       - name: Setup .NET SDK
-        uses: actions/setup-dotnet@v4
+        uses: actions/setup-dotnet@v6
         with:
           dotnet-version: |
             8.0.x
@@ -67,11 +67,23 @@ jobs:
             }
           }
 
+      # checkout's shallow fetch rewrites the tag as a lightweight ref to the commit,
+      # so re-fetch the annotated tag object and split its message into release name and notes.
       # Manual runs (workflow_dispatch) build and validate only - they never publish.
-      # The annotated tag message becomes the release body; GitHub appends generated notes.
+      - name: Extract release name and notes from tag message
+        id: tag_notes
+        if: github.event_name == 'push'
+        shell: bash
+        run: |
+          git fetch --force origin "refs/tags/${{ github.ref_name }}:refs/tags/${{ github.ref_name }}"
+          echo "name=$(git tag -l --format='%(contents:subject)' "${{ github.ref_name }}")" >> "$GITHUB_OUTPUT"
+          git tag -l --format='%(contents:body)' "${{ github.ref_name }}" > release-notes.md
+
       - name: Publish GitHub release
         if: github.event_name == 'push'
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           files: release-assets/*
+          name: ${{ steps.tag_notes.outputs.name }}
+          body_path: release-notes.md
           generate_release_notes: true

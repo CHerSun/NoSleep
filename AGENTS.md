@@ -70,9 +70,10 @@ Key mechanics to preserve:
 Releases are consumed externally by the Scoop `extras` bucket manifest (`nosleep.json`), which pins a strict publishing contract:
 
 - Release tags are **plain SemVer without a `v` prefix** (e.g. `1.4.1`): scoop's `checkver: github` reads the latest release tag name as the version.
+- Tags are **annotated**, and their message shapes the GitHub release automatically: the first line — `{version} — {short title}`, e.g. `1.5.0 — Localization & modern .NET builds` — becomes the release **name**, the message body becomes the release **notes** (curated changes + contributor credits), and GitHub's generated changelog is appended. The version must match the csproj.
 - Each release carries the **primary asset named exactly `NoSleep.exe`** — the bare net48 build produced by the msbuild command in [BUILD.md](BUILD.md) — matching the manifest's autoupdate URL `releases/download/$version/NoSleep.exe`. Secondary assets for modern .NET (`NoSleep-net8.exe`, `NoSleep-net10.exe`) are added alongside and don't affect the manifest.
 - Do not change the tag format, primary asset name, or packaging (zips, suffixes on the primary asset, extra primary assets) without coordinating a manifest update in the scoop extras bucket — otherwise autoupdate breaks for every scoop user.
-- Release workflows must build **both** targets (net48 via VS MSBuild, net8 via `dotnet build -c Release`, which also runs the single-file publish) even though only the net48 exe is published, and should fail if the published exe exceeds the 1 MB size budget.
+- Release workflows must build **all** targets (net48 via VS MSBuild, modern .NET via `dotnet build -c Release`, which also runs the single-file publish) even though only the net48 exe is the scoop-facing asset, and should fail if any published exe exceeds the 1 MB size budget.
 
 ## Conventions
 
