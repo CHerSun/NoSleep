@@ -104,6 +104,12 @@
   <data name="Msg_InstanceRunning" xml:space="preserve">
     <value>{0} 实例已在运行。</value>
   </data>
+  <data name="Msg_UnknownLanguage" xml:space="preserve">
+    <value>未知语言:'{0}'。</value>
+  </data>
+  <data name="Msg_AvailableLanguages" xml:space="preserve">
+    <value>可用语言:{0}</value>
+  </data>
   <data name="Msg_AutostartRemoveFailed" xml:space="preserve">
     <value>无法从 '{0}' 移除自启动快捷方式。错误:{1}</value>
   </data>

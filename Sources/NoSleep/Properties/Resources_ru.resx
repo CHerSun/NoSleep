@@ -104,6 +104,12 @@
   <data name="Msg_InstanceRunning" xml:space="preserve">
     <value>Экземпляр {0} уже запущен.</value>
   </data>
+  <data name="Msg_UnknownLanguage" xml:space="preserve">
+    <value>Неизвестный язык: «{0}».</value>
+  </data>
+  <data name="Msg_AvailableLanguages" xml:space="preserve">
+    <value>Доступные языки: {0}</value>
+  </data>
   <data name="Msg_AutostartRemoveFailed" xml:space="preserve">
     <value>Не удалось удалить ярлык автозапуска из «{0}». Ошибка: {1}</value>
   </data>

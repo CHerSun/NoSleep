@@ -160,6 +160,12 @@
   <data name="Msg_InstanceRunning" xml:space="preserve">
     <value>{0} instance is already running.</value>
   </data>
+  <data name="Msg_UnknownLanguage" xml:space="preserve">
+    <value>Unknown language: '{0}'.</value>
+  </data>
+  <data name="Msg_AvailableLanguages" xml:space="preserve">
+    <value>Available languages: {0}</value>
+  </data>
   <data name="Msg_AutostartRemoveFailed" xml:space="preserve">
     <value>Wasn't able to remove autostart shortcut from '{0}'. Error: {1}</value>
   </data>
