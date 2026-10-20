@@ -2,66 +2,76 @@ name: Release
 
 on:
   push:
-    branches:
-      - dev-chinese_localization
+    tags:
+      - '[0-9]+.[0-9]+.[0-9]+'
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
-  build:
+  release:
     name: Build & Release
     runs-on: windows-latest
-    permissions:
-      contents: write
-
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
+
+      - name: Setup MSBuild
+        uses: microsoft/setup-msbuild@v2
 
       - name: Setup .NET SDK
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: 8.0.x
+          dotnet-version: |
+            8.0.x
+            10.0.x
 
-      - name: Get Version
-        id: version
-        shell: pwsh
-        run: |
-          $ver = Select-String -Path Sources/NoSleep/NoSleep.csproj -Pattern '<Version>(.*?)</Version>' | ForEach-Object { $_.Matches.Groups[1].Value }
-          Write-Host "Version=$ver"
-          echo "version=$ver" | Out-File -FilePath $env:GITHUB_OUTPUT -Append -Encoding utf8
-
-      - name: Restore dependencies
-        run: dotnet restore Sources/NoSleep/NoSleep.csproj
-
-      - name: Build (net48 Release)
+      # Build all targets exactly as documented in BUILD.md
+      - name: Build net48 (primary release asset)
         run: msbuild Sources/NoSleep/NoSleep.csproj /p:Configuration=Release /p:TargetFramework=net48 /restore
 
-      - name: Pack Artifact
+      - name: Build net8 (single-file publish)
+        run: dotnet build Sources/NoSleep/NoSleep.csproj -f net8.0-windows -c Release
+
+      - name: Build net10 (single-file publish)
+        run: dotnet build Sources/NoSleep/NoSleep.csproj -f net10.0-windows -c Release
+
+      - name: Stage assets and run guards
         shell: pwsh
         run: |
-          Compress-Archive -Path Sources/NoSleep/bin/Release/net48/* -DestinationPath NoSleep-${{ steps.version.outputs.version }}-net48.zip
+          $errorActionPreference = 'Stop'
+          $csprojVersion = (Select-String -Path Sources/NoSleep/NoSleep.csproj -Pattern '<Version>(.*?)</Version>').Matches.Groups[1].Value
+          Write-Host "csproj version: $csprojVersion"
 
-      - name: Create Release Tag
-        id: tag
-        shell: bash
-        run: |
-          VERSION="${{ steps.version.outputs.version }}"
-          TAG="v${VERSION}-zh-CN"
-          echo "tag=$TAG" >> $GITHUB_OUTPUT
+          # Plain-SemVer tags and the bare NoSleep.exe asset name are the scoop publishing
+          # contract (checkver: github + releases/download/$version/NoSleep.exe) - do not change.
+          $artifacts = @(
+            @{ Source = 'Sources/NoSleep/bin/Release/net48/NoSleep.exe';                           Name = 'NoSleep.exe' },
+            @{ Source = 'Sources/NoSleep/bin/Release/net8.0-windows/win-x64/publish/NoSleep.exe';  Name = 'NoSleep-net8.exe' },
+            @{ Source = 'Sources/NoSleep/bin/Release/net10.0-windows/win-x64/publish/NoSleep.exe'; Name = 'NoSleep-net10.exe' }
+          )
 
-      - name: Create GitHub Release
+          New-Item -ItemType Directory -Path release-assets | Out-Null
+          foreach ($artifact in $artifacts) {
+            if (-not (Test-Path $artifact.Source)) { throw "Build output not found: $($artifact.Source)" }
+            $size = (Get-Item $artifact.Source).Length
+            if ($size -ge 1MB) { throw "$($artifact.Name) is $size bytes - exceeds the 1 MB budget" }
+            Copy-Item $artifact.Source ("release-assets/" + $artifact.Name)
+            Write-Host "$($artifact.Name): $size bytes"
+          }
+
+          if ('${{ github.ref_type }}' -eq 'tag') {
+            if ('${{ github.ref_name }}' -ne $csprojVersion) {
+              throw "Tag '${{ github.ref_name }}' does not match csproj version '$csprojVersion'"
+            }
+          }
+
+      # Manual runs (workflow_dispatch) build and validate only - they never publish.
+      # The annotated tag message becomes the release body; GitHub appends generated notes.
+      - name: Publish GitHub release
+        if: github.event_name == 'push'
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ steps.tag.outputs.tag }}
-          name: v${{ steps.version.outputs.version }} (zh-CN Localization)
-          body: |
-            ## NoSleep v${{ steps.version.outputs.version }} — 简体中文版
-
-            - 基于上游 v${{ steps.version.outputs.version }} 版本
-            - 新增简体中文 (zh-CN) 本地化支持
-            - 构建目标: .NET Framework 4.8
-          files: NoSleep-${{ steps.version.outputs.version }}-net48.zip
-          draft: false
-          prerelease: false
+          files: release-assets/*
+          generate_release_notes: true
