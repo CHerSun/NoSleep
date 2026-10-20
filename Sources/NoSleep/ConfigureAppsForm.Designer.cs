@@ -63,7 +63,7 @@ namespace NoSleep
             // colName
             // 
             this.colName.DataPropertyName = "Name";
-            this.colName.HeaderText = "Name";
+            this.colName.HeaderText = Properties.Resources.Col_Name;
             this.colName.MinimumWidth = 8;
             this.colName.Name = "colName";
             this.colName.Width = 200;
@@ -72,7 +72,7 @@ namespace NoSleep
             // 
             this.colExePath.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
             this.colExePath.DataPropertyName = "ExePath";
-            this.colExePath.HeaderText = "Exe Path";
+            this.colExePath.HeaderText = Properties.Resources.Col_ExePath;
             this.colExePath.MinimumWidth = 8;
             this.colExePath.Name = "colExePath";
             // 
@@ -84,7 +84,7 @@ namespace NoSleep
             this.buttonAdd.Name = "buttonAdd";
             this.buttonAdd.Size = new System.Drawing.Size(112, 42);
             this.buttonAdd.TabIndex = 1;
-            this.buttonAdd.Text = "➕ Add";
+            this.buttonAdd.Text = Properties.Resources.Btn_Add;
             this.buttonAdd.UseVisualStyleBackColor = true;
             this.buttonAdd.Click += new System.EventHandler(this.ButtonAdd_Click);
             // 
@@ -96,7 +96,7 @@ namespace NoSleep
             this.buttonRemove.Name = "buttonRemove";
             this.buttonRemove.Size = new System.Drawing.Size(112, 42);
             this.buttonRemove.TabIndex = 2;
-            this.buttonRemove.Text = "➖ Remove";
+            this.buttonRemove.Text = Properties.Resources.Btn_Remove;
             this.buttonRemove.UseVisualStyleBackColor = true;
             this.buttonRemove.Click += new System.EventHandler(this.ButtonRemove_Click);
             // 
@@ -109,7 +109,7 @@ namespace NoSleep
             this.buttonEnable.Name = "buttonEnable";
             this.buttonEnable.Size = new System.Drawing.Size(262, 42);
             this.buttonEnable.TabIndex = 3;
-            this.buttonEnable.Text = "Enable";
+            this.buttonEnable.Text = Properties.Resources.Btn_Enable;
             this.buttonEnable.UseVisualStyleBackColor = true;
             this.buttonEnable.Click += new System.EventHandler(this.ButtonEnable_Click);
             // 
@@ -122,7 +122,7 @@ namespace NoSleep
             this.buttonClose.Name = "buttonClose";
             this.buttonClose.Size = new System.Drawing.Size(112, 42);
             this.buttonClose.TabIndex = 4;
-            this.buttonClose.Text = "Close";
+            this.buttonClose.Text = Properties.Resources.Btn_Close;
             this.buttonClose.UseVisualStyleBackColor = true;
             // 
             // ConfigureAppsForm
@@ -141,7 +141,7 @@ namespace NoSleep
             this.MinimizeBox = false;
             this.Name = "ConfigureAppsForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "Configure Applications to monitor";
+            this.Text = Properties.Resources.Form_Title;
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewApps)).EndInit();
             this.ResumeLayout(false);
 

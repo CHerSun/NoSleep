@@ -1,4 +1,4 @@
-﻿using NoSleep.Properties;
+using NoSleep.Properties;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -143,41 +143,41 @@ namespace NoSleep
             _trayIcon.Click += Click_TrayIcon;
 
             // Create tray menu items
-            var _MenuItem_Close = new ToolStripMenuItem("Close");
+            var _MenuItem_Close = new ToolStripMenuItem(Resources.TrayMenu_Close);
             _MenuItem_Close.Click += (e, s) => Application.Exit();
 
-            _menuItem_AutoStart = new ToolStripMenuItem("Autostart at login")
+            _menuItem_AutoStart = new ToolStripMenuItem(Resources.TrayMenu_Autostart)
             {
                 Checked = UserAutoStart,
-                ToolTipText = "Should we start when you log in?"
+                ToolTipText = Resources.Tooltip_Autostart
             };
             _menuItem_AutoStart.Click += Click_AutoStart;
 
-            _menuItem_RememberEnabledState = new ToolStripMenuItem("Remember enabled state")
+            _menuItem_RememberEnabledState = new ToolStripMenuItem(Resources.TrayMenu_RememberState)
             {
                 Checked = UserPersistEnabled,
-                ToolTipText = "Should we remember the enabled state between restarts?"
+                ToolTipText = Resources.Tooltip_RememberState
             };
             _menuItem_RememberEnabledState.Click += Click_SaveEnabledState;
 
-            _menuItem_ConfigureApps = new ToolStripMenuItem("Configure apps to monitor")
+            _menuItem_ConfigureApps = new ToolStripMenuItem(Resources.TrayMenu_ConfigureApps)
             {
                 Checked = IsWatchingFeatureActive,
-                ToolTipText = "Configure apps to keep the screen on when they are running."
+                ToolTipText = Resources.Tooltip_ConfigureApps
             };
             _menuItem_ConfigureApps.Click += Click_ConfigureApps;
 
-            _menuItem_Enabled = new ToolStripMenuItem("Enabled")
+            _menuItem_Enabled = new ToolStripMenuItem(Resources.TrayMenu_Enabled)
             {
                 Checked = UserEnabled,
-                ToolTipText = "Are we enabled right now?"
+                ToolTipText = Resources.Tooltip_Enabled
             };
             _menuItem_Enabled.Click += Click_Enabled;
 
-            _menuItem_DisplayRequired = new ToolStripMenuItem("Keep screen on")
+            _menuItem_DisplayRequired = new ToolStripMenuItem(Resources.TrayMenu_KeepScreenOn)
             {
                 Checked = !Settings.Default.DisplayRequired,
-                ToolTipText = "If display should be kept always on in addition to keeping the system on."
+                ToolTipText = Resources.Tooltip_KeepScreenOn
             };
             _menuItem_DisplayRequired.Click += Click_DisplayRequired;
             Click_DisplayRequired(null, null);

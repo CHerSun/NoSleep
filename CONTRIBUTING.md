@@ -1,3 +1,5 @@
+> 🌐 Languages: [English](CONTRIBUTING.md) | [简体中文](CONTRIBUTING.zh-CN.md)
+
 # Contributing to NoSleep
 
 Thank you for considering contributing to NoSleep! Contributions are welcomed from everyone. By participating in this project, you agree to abide by the following guidelines and to license your contributions under The Unlicense (see [LICENSE](LICENSE)).

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Threading;
 using System.Windows.Forms;
 
@@ -16,7 +16,7 @@ namespace NoSleep
             {
                 if (!mutex.WaitOne(0, false))
                 {
-                    MessageBox.Show($"{Properties.Settings.Default.AppName} instance is already running.", Properties.Settings.Default.AppName, MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    MessageBox.Show(string.Format(Properties.Resources.Msg_InstanceRunning, Properties.Settings.Default.AppName), Properties.Settings.Default.AppName, MessageBoxButtons.OK, MessageBoxIcon.Information);
                     return;
                 }
 
