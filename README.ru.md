@@ -24,7 +24,7 @@ scoop install extras/nosleep
 
 NoSleep создана по принципу «настроил и забыл». Запущенная программа сидит в системном трее и не даёт компьютеру уснуть.
 
-- **Левый клик** по значку в трею включает или выключает программу. Значок меняется в зависимости от состояния.
+- **Левый клик** по значку в трею включает или выключает программу. Значок меняется в зависимости от состояния; в выключенном состоянии иконка «zzz» подстраивается под цветовую тему Windows (белая на тёмной панели задач), чтобы оставаться заметной.
 - **Правый клик** по значку открывает меню с дополнительными опциями:
 
   - **Автозапуск при входе** — запускать NoSleep автоматически при входе в систему.
@@ -68,6 +68,6 @@ NoSleep вызывает функцию `SetThreadExecutionState` каждые 1
 | Использование   | Иконка и источник                                                                              | Лицензия                 | Художник                                                                    |
 | --------------- | ---------------------------------------------------------------------------------------------- | ------------------------ | --------------------------------------------------------------------------- |
 | Включено        | [Coffee icon](https://www.iconarchive.com/show/food-icons-by-martin-berube/coffee-icon.html)   | Freeware                 | [Martin Berube](https://www.iconarchive.com/artist/martin-berube.html)      |
-| Выключено       | [Sleep icon](https://www.iconarchive.com/show/material-icons-by-pictogrammers/sleep-icon.html) | Apache 2.0 (Open Source) | [Pictogrammers Team](https://www.iconarchive.com/artist/pictogrammers.html) |
+| Выключено       | [Sleep icon](https://www.iconarchive.com/show/material-icons-by-pictogrammers/sleep-icon.html) (чёрная; белая перекраска для тёмной панели задач) | Apache 2.0 (Open Source) | [Pictogrammers Team](https://www.iconarchive.com/artist/pictogrammers.html) |
 
 Большое спасибо художникам за эти иконки!

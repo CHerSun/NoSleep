@@ -24,7 +24,7 @@ scoop install extras/nosleep
 
 NoSleep 采用"设置后即忘"的设计。一旦运行,它会驻留在 Windows 系统托盘中,防止你的电脑进入睡眠状态。
 
-- **左键单击**托盘图标可切换启用或禁用状态。图标会随之变化以反映当前状态。
+- **左键单击**托盘图标可切换启用或禁用状态。图标会随之变化以反映当前状态;禁用时「zzz」图标会跟随 Windows 颜色模式(深色任务栏上显示为白色),确保清晰可见。
 - **右键单击**托盘图标可打开菜单,包含以下附加选项:
 
   - **登录时自动启动** – 在你登录时自动启动 NoSleep。
@@ -68,6 +68,6 @@ NoSleep 每 10 秒调用一次 `SetThreadExecutionState` 函数,重置 Windows �
 | 用途          | 图标及来源                                                                                      | 许可证                  | 作者                                                                      |
 | -------------- | ---------------------------------------------------------------------------------------------- | ------------------------ | --------------------------------------------------------------------------- |
 | 启用状态  | [Coffee icon](https://www.iconarchive.com/show/food-icons-by-martin-berube/coffee-icon.html)   | 免费软件                 | [Martin Berube](https://www.iconarchive.com/artist/martin-berube.html)      |
-| 禁用状态 | [Sleep icon](https://www.iconarchive.com/show/material-icons-by-pictogrammers/sleep-icon.html) | Apache 2.0(开源) | [Pictogrammers Team](https://www.iconarchive.com/artist/pictogrammers.html) |
+| 禁用状态 | [Sleep icon](https://www.iconarchive.com/show/material-icons-by-pictogrammers/sleep-icon.html)(黑色;深色任务栏使用白色重绘版) | Apache 2.0(开源) | [Pictogrammers Team](https://www.iconarchive.com/artist/pictogrammers.html) |
 
 衷心感谢这些图标的作者!

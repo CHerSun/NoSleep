@@ -24,7 +24,7 @@ Alternatively, you can download the latest release manually from [the releases p
 
 NoSleep is designed to be "set and forget". Once running, it sits in the Windows system tray and prevents your PC from sleeping.
 
-- **Left‑click** the tray icon to toggle the enabled state on or off. The icon changes to reflect the current state.
+- **Left‑click** the tray icon to toggle the enabled state on or off. The icon changes to reflect the current state; when disabled, the "zzz" icon follows your Windows color mode (white on dark taskbars) so it stays visible.
 - **Right‑click** the tray icon to open a menu with additional options:
 
   - **Autostart at login** – Start NoSleep automatically when you log in.
@@ -68,6 +68,6 @@ NoSleep calls the `SetThreadExecutionState` function every 10 seconds, resetting
 | Usage          | Icon & Source                                                                                  | License                  | Artist                                                                      |
 | -------------- | ---------------------------------------------------------------------------------------------- | ------------------------ | --------------------------------------------------------------------------- |
 | Enabled state  | [Coffee icon](https://www.iconarchive.com/show/food-icons-by-martin-berube/coffee-icon.html)   | Freeware                 | [Martin Berube](https://www.iconarchive.com/artist/martin-berube.html)      |
-| Disabled state | [Sleep icon](https://www.iconarchive.com/show/material-icons-by-pictogrammers/sleep-icon.html) | Apache 2.0 (Open Source) | [Pictogrammers Team](https://www.iconarchive.com/artist/pictogrammers.html) |
+| Disabled state | [Sleep icon](https://www.iconarchive.com/show/material-icons-by-pictogrammers/sleep-icon.html) (black; white recolor for dark taskbars) | Apache 2.0 (Open Source) | [Pictogrammers Team](https://www.iconarchive.com/artist/pictogrammers.html) |
 
 Many thanks to the artists for these icons!
