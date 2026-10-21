@@ -197,8 +197,23 @@ namespace NoSleep
             };
             _menuItem_DisplayRequired.Click += Click_DisplayRequired;
 
+            // Sleep-mode indicator: non-interactive info line at the very top (issue #8).
+            // The mode cannot change without a reboot, so the text is fixed for the run.
+            var modeText = PowerPlatform.SleepMode == SleepMode.ModernStandby ? Strings.TrayMenu_SleepModeModern
+                        : PowerPlatform.SleepMode == SleepMode.Classic ? Strings.TrayMenu_SleepModeClassic
+                        : Strings.TrayMenu_SleepModeUnknown;
+            var modeIndicator = new ToolStripControlHost(new Label
+            {
+                Text = modeText,
+                AutoSize = true,
+                Enabled = false, // grayed on purpose: informational, not interactive
+                Margin = new Padding(8, 4, 8, 4)
+            });
+
             // Initialize context menu with created items
             _trayIcon.ContextMenuStrip = new ContextMenuStrip();
+            _trayIcon.ContextMenuStrip.Items.Add(modeIndicator);
+            _trayIcon.ContextMenuStrip.Items.Add(new ToolStripSeparator());
             _trayIcon.ContextMenuStrip.Items.Add(_menuItem_AutoStart);
             _trayIcon.ContextMenuStrip.Items.Add(_menuItem_DisplayRequired);
             _trayIcon.ContextMenuStrip.Items.Add(_menuItem_RememberEnabledState);

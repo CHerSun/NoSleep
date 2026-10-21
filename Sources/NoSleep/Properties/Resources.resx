@@ -145,6 +145,15 @@
   <data name="TrayMenu_KeepScreenOn" xml:space="preserve">
     <value>Keep screen on</value>
   </data>
+  <data name="TrayMenu_SleepModeClassic" xml:space="preserve">
+    <value>Sleep mode: Classic (S3)</value>
+  </data>
+  <data name="TrayMenu_SleepModeModern" xml:space="preserve">
+    <value>Sleep mode: Modern Standby (S0)</value>
+  </data>
+  <data name="TrayMenu_SleepModeUnknown" xml:space="preserve">
+    <value>Sleep mode: unknown (classic behavior)</value>
+  </data>
   <data name="Tooltip_Autostart" xml:space="preserve">
     <value>Should we start when you log in?</value>
   </data>

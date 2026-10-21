@@ -37,6 +37,30 @@ namespace NoSleep
         [DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
         static internal extern EXECUTION_STATE SetThreadExecutionState(EXECUTION_STATE esFlags);
 
+        [DllImport("powrprof.dll")]
+        [return: MarshalAs(UnmanagedType.U1)]
+        private static extern bool GetPwrCapabilities(IntPtr systemPowerCapabilities);
+
+        /// <summary>
+        /// Raw SYSTEM_POWER_CAPABILITIES as a byte buffer (allocated large; callers decode
+        /// the documented head offsets). Null if the call fails. See PowerPlatform for offsets.
+        /// </summary>
+        internal static byte[] GetPowerCapabilities()
+        {
+            byte[] buffer = new byte[512];
+            GCHandle handle = GCHandle.Alloc(buffer, GCHandleType.Pinned);
+            try
+            {
+                if (!GetPwrCapabilities(handle.AddrOfPinnedObject()))
+                    return null;
+                return buffer;
+            }
+            finally
+            {
+                handle.Free();
+            }
+        }
+
         // --- Windows color mode detection (used only to pick the inactive tray icon color) ---
         private const string ThemeKeyPath = @"Software\Microsoft\Windows\CurrentVersion\Themes\Personalize";
         /// <summary> Cached read-only handle to the Personalize key; saves ~640 B/call of the naive open+read+dispose pattern. </summary>

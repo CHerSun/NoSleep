@@ -86,6 +86,15 @@
   <data name="TrayMenu_KeepScreenOn" xml:space="preserve">
     <value>Держать экран включенным</value>
   </data>
+  <data name="TrayMenu_SleepModeClassic" xml:space="preserve">
+    <value>Режим сна: классический (S3)</value>
+  </data>
+  <data name="TrayMenu_SleepModeModern" xml:space="preserve">
+    <value>Режим сна: Modern Standby (S0)</value>
+  </data>
+  <data name="TrayMenu_SleepModeUnknown" xml:space="preserve">
+    <value>Режим сна: не определен (классическое поведение)</value>
+  </data>
   <data name="Tooltip_Autostart" xml:space="preserve">
     <value>Запускать при входе в систему?</value>
   </data>

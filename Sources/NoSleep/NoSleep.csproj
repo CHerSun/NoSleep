@@ -52,6 +52,7 @@
     </Compile>
     <Compile Include="ExecutionStateBackend.cs" />
     <Compile Include="ISleepBackend.cs" />
+    <Compile Include="PowerPlatform.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="SleepController.cs" />
     <Compile Include="Tools.cs" />

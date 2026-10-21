@@ -86,6 +86,15 @@
   <data name="TrayMenu_KeepScreenOn" xml:space="preserve">
     <value>保持屏幕常亮</value>
   </data>
+  <data name="TrayMenu_SleepModeClassic" xml:space="preserve">
+    <value>睡眠模式：传统 (S3)</value>
+  </data>
+  <data name="TrayMenu_SleepModeModern" xml:space="preserve">
+    <value>睡眠模式：新式待机 (S0)</value>
+  </data>
+  <data name="TrayMenu_SleepModeUnknown" xml:space="preserve">
+    <value>睡眠模式：未知（按传统方式工作）</value>
+  </data>
   <data name="Tooltip_Autostart" xml:space="preserve">
     <value>是否在登录时自动启动?</value>
   </data>

@@ -108,6 +108,9 @@ namespace NoSleep.Properties
         internal static string TrayMenu_ConfigureApps => Get("TrayMenu_ConfigureApps");
         internal static string TrayMenu_Enabled => Get("TrayMenu_Enabled");
         internal static string TrayMenu_KeepScreenOn => Get("TrayMenu_KeepScreenOn");
+        internal static string TrayMenu_SleepModeClassic => Get("TrayMenu_SleepModeClassic");
+        internal static string TrayMenu_SleepModeModern => Get("TrayMenu_SleepModeModern");
+        internal static string TrayMenu_SleepModeUnknown => Get("TrayMenu_SleepModeUnknown");
         internal static string Tooltip_Autostart => Get("Tooltip_Autostart");
         internal static string Tooltip_RememberState => Get("Tooltip_RememberState");
         internal static string Tooltip_ConfigureApps => Get("Tooltip_ConfigureApps");
