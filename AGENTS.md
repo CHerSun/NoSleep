@@ -47,20 +47,34 @@ All code lives in `Sources/NoSleep/` (~650 LoC, no subprojects):
 | File | Role |
 |------|------|
 | `Program.cs` | Entry point: `--lang` UI-language override, single-instance mutex, settings upgrade, runs `TrayIcon` as `ApplicationContext` |
-| `TrayIcon.cs` | The app: tray icon, context menu, both timers (sleep refresh + app watch), effective-state logic (`EffectivePreventSleep`) |
+| `TrayIcon.cs` | UI shell: tray icon, context menu (incl. the sleep-mode indicator and the S0-only items), theme watcher; forwards user intent into settings + `SleepController`, renders from `StateChanged` |
+| `SleepController.cs` | State machine / single source of truth: user intent + app-watch result → `EffectivePreventSleep` → routed backend |
+| `ISleepBackend.cs` | Backend contract (`Arm(SleepOptions)`/`Disarm()`, idempotent reconcile) + `SleepOptions` |
+| `ExecutionStateBackend.cs` | Classic S1–S3 prevention: `SetThreadExecutionState` incl. away mode, timer re-arm (1.5.x behavior) |
+| `ModernStandbyBackend.cs` | S0 prevention: ES base (no away mode) + lid override + activity simulation orchestration |
+| `LidOverride.cs` | `LIDACTION` → "Do nothing" while armed; snapshot/restore with crash self-heal (`LidOverrideArmed`/`LidOverrideSnapshot` settings) |
+| `InputSimulator.cs` | 1 px relative mouse moves via `SendInput` (burst + single moves) |
+| `PowerNotifications.cs` | powrprof callback notifications (lid switch + suspend/resume); **delegate must stay statically rooted, registrations are never unregistered** (crash lessons) |
+| `PowerPlatform.cs` | `GetPwrCapabilities`-based sleep-mode detection (registry `PlatformAoAc` is NOT usable — absent on real S0 hardware) |
 | `Properties/Strings.cs` | Culture-aware string facade: languages discovered from embedded resources, English per-string fallback |
-| `WinU.cs` | Win32 interop: `EXECUTION_STATE` enum, `SetThreadExecutionState`, `QueryFullProcessImageName`-based process path lookup (exception-free) |
+| `WinU.cs` | Win32 interop: `EXECUTION_STATE`/`SetThreadExecutionState`, `GetPwrCapabilities`, power-scheme read/write APIs, `QueryFullProcessImageName`-based process path lookup (exception-free) |
 | `Tools.cs` | Autostart via Startup-folder shortcut, created through `WScript.Shell` COM late binding (works on both targets, no IWshRuntimeLibrary reference) |
 | `AppsConfig.cs` | Watched-apps list load/save backed by `Properties.Settings` |
 | `ConfigureAppsForm.*` | WinForms dialog to edit the watched-apps list |
 
 Key mechanics to preserve:
 
-- Sleep prevention = timer that re-arms `SetThreadExecutionState` every `RefreshIntervalMs` (default 10 s); `ES_CONTINUOUS` release is done with a lone `ES_CONTINUOUS` call (see `DisarmExecutionState`).
-- Apps watching: when enabled and the list is non-empty, `EffectivePreventSleep` is gated on `_anyWatchedAppRunning`; process matching tries full path first, falls back to process name (case-insensitive).
+- Sleep prevention = backend armed via the controller, re-arming `SetThreadExecutionState` every `RefreshIntervalMs` (default 10 s); `ES_CONTINUOUS` release is done with a lone `ES_CONTINUOUS` call.
+- Sleep-mode routing: `PowerPlatform.SleepMode` (boot-constant) picks `ExecutionStateBackend` (classic/unknown) or `ModernStandbyBackend` (S0). S0-only menu items appear only on S0 machines; settings are a superset (all keys exist everywhere; unused ones are inert).
+- Away mode is S3-only (documented OS behavior): the classic backend keeps it, the S0 backend must not use it.
+- Lid override: explicit user setting, lid-only by default (trigger table in `LidOverride`); restore-on-disarm plus next-launch self-heal; skips restore if the user took the lid action back.
+- Activity simulation: 0/1/2 (off / prevent / presence). "Prevent" = burst + ~2 Hz sustain ~20 s on lid-close/suspend notifications (a bare burst can finish inside the ~107 ms pre-suspend window and get lost); "presence" = 1 Hz continuous — the only battery-surviving mode (on battery S0 the OS terminates power requests 5 min after the sleep timeout; final, measured).
+- Apps watching: when enabled and the list is non-empty, `EffectivePreventSleep` is gated on the monitor's `AnyRunning`; process matching tries full path first, falls back to process name (case-insensitive).
 - Settings persist via `Properties.Settings` (`Settings.settings`); `UpgradeRequired` flag drives settings migration between versions.
 - Icons are embedded resources and make up most of the binary size (~180 KB).
 - Localization: UI strings live in `Properties/Resources*.resx` (English neutral, `ru`, `zh-CN`), embedded into the **main assembly** under explicit `LogicalName`s. Use underscore file names (`Resources_ru.resx`) — dot-culture names (`Resources.ru.resx`) make MSBuild build satellite DLLs that the single-exe artifact would never ship. Access strings via `NoSleep.Properties.Strings`; language auto-detects from `CurrentUICulture`, overridable per run with `--lang`. Adding a language = a new `Resources_xx.resx` file plus its csproj `EmbeddedResource` entry; picker, fallback and `--lang list` adapt automatically.
+
+`tools/sleep-mode/` holds the sleep-mode investigation kit: measured findings (`S0-FINDINGS.md`, referenced as T01–T18 across the code), the rework plan, and standalone probe scripts. Raw test reports are intentionally NOT committed (they contained private environment details).
 
 ## Git workflow
 
