@@ -5,10 +5,10 @@
     <Copyright>Copyleft since 2016</Copyright>
     <RepositoryUrl>https://github.com/CHerSun/NoSleep</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
-    <Version>1.5.1</Version>
+    <Version>1.6.0</Version>
     <!-- file info -->
     <AssemblyTitle>A Windows tool to prevent sleep</AssemblyTitle>
-    <FileVersion>1.5.1.0</FileVersion>
+    <FileVersion>1.6.0.0</FileVersion>
     <InformationalVersion>$(Version) (https://github.com/CHerSun/NoSleep)</InformationalVersion>
 
     <!-- COM visibility -->
