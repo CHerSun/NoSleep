@@ -27,14 +27,6 @@ namespace NoSleep
         ES_CONTINUOUS = 0x80000000
     }
 
-    /// <summary> Extension methods for <see cref="EXECUTION_STATE"/> enum. </summary>
-    internal static class ExecutionStateEnumExtensions
-    {
-        internal static EXECUTION_STATE EnableFlag(this EXECUTION_STATE value, EXECUTION_STATE flag) => value | flag;
-        internal static EXECUTION_STATE DisableFlag(this EXECUTION_STATE value, EXECUTION_STATE flag) => value & ~flag;
-        internal static EXECUTION_STATE ToggleFlag(this EXECUTION_STATE value, EXECUTION_STATE flag) => value ^ flag;
-    }
-
     /// <summary> Win32 API wrapper for SetThreadExecutionState. </summary>
     internal static class WinU
     {

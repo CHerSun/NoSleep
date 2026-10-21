@@ -1,22 +1,18 @@
 ﻿using NoSleep.Properties;
 using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Diagnostics;
-using System.IO;
 using System.Linq;
 using System.Windows.Forms;
 
 namespace NoSleep
 {
+    /// <summary>
+    /// UI shell: tray icon + context menu. Holds no prevention logic - user actions are
+    /// written into the settings and pushed into the <see cref="SleepController"/>, and all
+    /// visuals are re-rendered from the controller's StateChanged event (one-way data flow).
+    /// </summary>
     internal class TrayIcon : ApplicationContext
     {
-        /// <summary> ExecutionMode defines how exactly sleep prevention is made. Mutable at runtime. </summary>
-        private EXECUTION_STATE ExecutionMode = EXECUTION_STATE.ES_CONTINUOUS | EXECUTION_STATE.ES_DISPLAY_REQUIRED |
-                                                EXECUTION_STATE.ES_SYSTEM_REQUIRED | EXECUTION_STATE.ES_AWAYMODE_REQUIRED;
-
-        // PRIVATE VARIABLES
         // --- UI elements ---
         private NotifyIcon _trayIcon;
         private ToolStripMenuItem _menuItem_ConfigureApps;
@@ -25,23 +21,23 @@ namespace NoSleep
         private ToolStripMenuItem _menuItem_AutoStart;
         private ToolStripMenuItem _menuItem_RememberEnabledState;
         // --- Timers ---
-        /// <summary> Keeps the system awake (sole purpose). </summary>
-        private readonly Timer _refreshTimer;
-        /// <summary> Checks running apps and controlls effective state. </summary>
-        private readonly Timer _appsWatchTimer;
         /// <summary> While the inactive icon is shown: watches the Windows color mode to keep the "zzz" visible on dark taskbars. </summary>
         private readonly Timer _themeWatchTimer;
         /// <summary> Cadence of <see cref="_themeWatchTimer"/>; matches the app's other timers. </summary>
         private const int ThemePollIntervalMs = 10000;
         // --- Runtime state ---
-        /// <summary> Private flag to show if we found app on the watch list </summary>
-        private bool _anyWatchedAppRunning;
         /// <summary> Last taskbar color mode answer; the poll tick compares against it to skip redundant updates. </summary>
         private bool? _taskbarLight;
 
-        // PROPERTIES
-        #region USER SETTINGS (persisted)
-        /// <summary> Get or Set user-controlled setting -- whether the app is enabled at all </summary>
+        // --- domains ---
+        private readonly SleepController _controller;
+        private readonly AppMonitor _appMonitor;
+
+        /// <summary> User-controlled watched apps list. </summary>
+        public BindingList<AppEntry> WatchedApps { get; }
+
+        #region USER SETTINGS (persisted) - thin wrappers: persist + feed the controller
+        /// <summary> Whether the app is enabled at all. </summary>
         public bool UserEnabled
         {
             get => Settings.Default.EnabledState;
@@ -51,10 +47,10 @@ namespace NoSleep
                     return;
                 Settings.Default.EnabledState = value;
                 Settings.Default.Save();
-                OnUserSettingsChanged(); // Trigger point - user action, we need to update state.
+                _controller.SetUserEnabled(value);
             }
         }
-        /// <summary> Get or Set user-controlled setting -- whether the user wants to persist enabled state between reruns </summary>
+        /// <summary> Whether the user wants to persist the enabled state between reruns. </summary>
         public bool UserPersistEnabled
         {
             get => Settings.Default.SaveEnabledState;
@@ -66,7 +62,7 @@ namespace NoSleep
                 Settings.Default.Save();
             }
         }
-        /// <summary> Get or Set user-controlled setting -- whether Apps Watching is enabled at all </summary>
+        /// <summary> Whether apps watching is enabled at all. </summary>
         public bool UserWatchingEnabled
         {
             get => Settings.Default.WatchedAppsEnabled;
@@ -76,11 +72,22 @@ namespace NoSleep
                     return;
                 Settings.Default.WatchedAppsEnabled = value;
                 Settings.Default.Save();
-                OnUserSettingsChanged(); // Trigger point - user action, we need to update state.
+                SyncWatching();
             }
         }
-        /// <summary> User-controlled watched apps list. </summary>
-        public BindingList<AppEntry> WatchedApps { get; } = new BindingList<AppEntry>();
+        /// <summary> Whether the display is kept on while prevention is active. </summary>
+        public bool UserKeepScreenOn
+        {
+            get => Settings.Default.DisplayRequired;
+            set
+            {
+                if (Settings.Default.DisplayRequired == value)
+                    return;
+                Settings.Default.DisplayRequired = value;
+                Settings.Default.Save();
+                _controller.SetKeepScreenOn(value);
+            }
+        }
         public bool UserAutoStart
         {
             get => Tools.AutostartCheck();
@@ -94,14 +101,12 @@ namespace NoSleep
         }
         #endregion
 
-
-        #region EFFECTIVE STATES (read‑only for UI)
+        #region EFFECTIVE STATES (read-only for UI)
         /// <summary> If we effectively prevent sleep right now? </summary>
-        public bool EffectivePreventSleep =>
-            UserEnabled && ((!(UserWatchingEnabled && (WatchedApps.Count>0))) || _anyWatchedAppRunning);
+        public bool EffectivePreventSleep => _controller.EffectivePreventSleep;
         /// <summary> If Apps watching feature is active right now? </summary>
         public bool IsWatchingFeatureActive =>
-            UserWatchingEnabled && WatchedApps.Any();
+            Settings.Default.WatchedAppsEnabled && WatchedApps.Count > 0;
         #endregion
 
         // CONSTRUCTOR
@@ -112,20 +117,13 @@ namespace NoSleep
             if (Settings.Default.WatchedApps == null)
                 Settings.Default.WatchedApps = new System.Collections.Specialized.StringCollection();
 
-            // Start up as if we've detected some app on watchlist (so that we don't block sleep prevention initially)
-            _anyWatchedAppRunning = true;
-
-            // Load watched apps from settings into our BindingList and add auto modification action
+            // Load watched apps from settings; persist on every change
             WatchedApps = new BindingList<AppEntry>(AppsConfig.Load());
-            WatchedApps.ListChanged += (s, e) => OnWatchedAppsChanged();
-
-            // Initialize the sleep prevention timer with sole action of re-arming the state
-            _refreshTimer = new Timer { Interval = Settings.Default.RefreshIntervalMs };
-            _refreshTimer.Tick += (s, e) => WinU.SetThreadExecutionState(ExecutionMode);
-
-            // Initialize the apps watching timer
-            _appsWatchTimer = new Timer { Interval = Settings.Default.WatchAppsIntervalMs };
-            _appsWatchTimer.Tick += AppsWatchTimer_Tick;
+            WatchedApps.ListChanged += (s, e) =>
+            {
+                AppsConfig.Save(WatchedApps.ToList());
+                SyncWatching(); // list edits may toggle the watching feature on/off
+            };
 
             // Initialize the taskbar color mode watcher (runs only while the inactive icon is shown)
             _themeWatchTimer = new Timer { Interval = ThemePollIntervalMs };
@@ -136,16 +134,20 @@ namespace NoSleep
             InitializeComponent();
             _trayIcon.Visible = true;
 
-            // BEHAVIOR: Set initial Enabled state depending on user preference for persistence between restarts.
-            // Must run AFTER InitializeComponent: when the persisted state differs, the setter triggers
-            // OnUserSettingsChanged, which needs the menu items and the tray icon to already exist (crashed with
-            // NullReferenceException on startup otherwise).
-            UserEnabled = !Settings.Default.SaveEnabledState || Settings.Default.EnabledState;
-            _menuItem_Enabled.Checked = UserEnabled; // keep the checkbox in sync when the reset above changed the state
+            // Domains. Wired after the UI exists: state transitions below refresh the menu and icon.
+            _appMonitor = new AppMonitor(WatchedApps, Settings.Default.WatchAppsIntervalMs);
+            _controller = new SleepController(new ExecutionStateBackend(Settings.Default.RefreshIntervalMs), _appMonitor);
+            _controller.StateChanged += (s, e) => RefreshFromState();
 
-            // Apply initial state
-            OnUserSettingsChanged();
+            // Apply initial state.
+            _appMonitor.Initialize(); // real watch answer before the first Apply, not an assumption
+            _controller.SetKeepScreenOn(Settings.Default.DisplayRequired);
+            // BEHAVIOR: initial Enabled state depends on the user preference for persistence between restarts.
+            _controller.SetUserEnabled(!Settings.Default.SaveEnabledState || Settings.Default.EnabledState);
+            SyncWatching();
+            _controller.Apply();
         }
+
         private void InitializeComponent()
         {
             // Initialize Tray icon
@@ -183,18 +185,17 @@ namespace NoSleep
 
             _menuItem_Enabled = new ToolStripMenuItem(Strings.TrayMenu_Enabled)
             {
-                Checked = UserEnabled,
+                Checked = !Settings.Default.SaveEnabledState || Settings.Default.EnabledState,
                 ToolTipText = Strings.Tooltip_Enabled
             };
             _menuItem_Enabled.Click += Click_Enabled;
 
             _menuItem_DisplayRequired = new ToolStripMenuItem(Strings.TrayMenu_KeepScreenOn)
             {
-                Checked = !Settings.Default.DisplayRequired,
+                Checked = Settings.Default.DisplayRequired,
                 ToolTipText = Strings.Tooltip_KeepScreenOn
             };
             _menuItem_DisplayRequired.Click += Click_DisplayRequired;
-            Click_DisplayRequired(null, null);
 
             // Initialize context menu with created items
             _trayIcon.ContextMenuStrip = new ContextMenuStrip();
@@ -208,99 +209,77 @@ namespace NoSleep
             _trayIcon.ContextMenuStrip.Items.Add(_MenuItem_Close);
         }
 
+        /// <summary> Feed the watching-feature state (enabled setting + non-empty list) into the controller. </summary>
+        private void SyncWatching()
+        {
+            _controller.SetWatchingActive(IsWatchingFeatureActive);
+            RefreshFromState(); // the checked state of "Configure apps" depends on the list too
+        }
+
+        /// <summary> The single UI render: menu checked states, icon and the theme watcher - all from the current state. </summary>
+        private void RefreshFromState()
+        {
+            _menuItem_Enabled.Checked = _controller.UserEnabled;
+            _menuItem_DisplayRequired.Checked = _controller.KeepScreenOn;
+            _menuItem_ConfigureApps.Checked = IsWatchingFeatureActive;
+
+            // The color mode watcher is only needed while the inactive icon is displayed.
+            _themeWatchTimer.Enabled = !EffectivePreventSleep;
+            if (EffectivePreventSleep)
+                _trayIcon.Icon = Resources.TrayIcon;
+            else
+                UpdateInactiveTrayIcon();
+        }
 
         // PRIVATE EVENT HANDLERS
         /// <summary> Tray icon click (the icon ITSELF) - enable/disable global state.</summary>
         private void Click_TrayIcon(object sender, EventArgs e)
         {
             var e2 = e as MouseEventArgs;
-            if (e2.Button == MouseButtons.Left)
-                Click_Enabled(sender, e);
+            if (e2 != null && e2.Button == MouseButtons.Left)
+                UserEnabled = !UserEnabled;
         }
 
-        /// <summary> Click on "Keep screen on" menu item - Toggle display required flag.</summary>
-        private void Click_DisplayRequired(object sender, EventArgs e)
-        {
-            // Toggle the setting
-            bool newState = !_menuItem_DisplayRequired.Checked; // NOTE: Yes, MenuItem state here. Used for initial toggling from the opposite.
-            if (Settings.Default.DisplayRequired != newState)
-            {
-                Settings.Default.DisplayRequired = newState;
-                Settings.Default.Save();
-            }
-            _menuItem_DisplayRequired.Checked = newState;
-
-            // Update the execution mode flags
-            ExecutionMode = newState
-                ? ExecutionMode.EnableFlag(EXECUTION_STATE.ES_DISPLAY_REQUIRED)
-                : ExecutionMode.DisableFlag(EXECUTION_STATE.ES_DISPLAY_REQUIRED);
-
-            // If sleep prevention is currently active, apply the new flags immediately
-            if (_refreshTimer.Enabled)
-                WinU.SetThreadExecutionState(ExecutionMode);
-        }
-
-        /// <summary> Click on "Enabled" menu item - Toggle the enabled state and update the menu item accordingly.</summary>
+        /// <summary> Click on "Enabled" menu item - toggle the enabled state.</summary>
         private void Click_Enabled(object sender, EventArgs e)
         {
-            _menuItem_Enabled.Checked = !_menuItem_Enabled.Checked;
-            UserEnabled = _menuItem_Enabled.Checked;
+            UserEnabled = !UserEnabled;
         }
 
-        /// <summary> Click on "Configure apps" menu item - show the form to adjust apps watch list. </summary>
+        /// <summary> Click on "Keep screen on" menu item - toggle the display required flag.</summary>
+        private void Click_DisplayRequired(object sender, EventArgs e)
+        {
+            UserKeepScreenOn = !UserKeepScreenOn;
+        }
+
+        /// <summary> Click on "Configure apps" menu item - show the form to adjust the apps watch list. </summary>
         private void Click_ConfigureApps(object sender, EventArgs e)
         {
             using (var configForm = new ConfigureAppsForm(this))
                 configForm.ShowDialog();
         }
 
-        /// <summary> Click on "Autostart at login" menu item - Toggle the autostart state and update the menu item accordingly.</summary>
+        /// <summary> Click on "Autostart at login" menu item - toggle the autostart state and update the menu item accordingly.</summary>
         private void Click_AutoStart(object sender, EventArgs e)
         {
-            // Toggle the autostart state
             UserAutoStart = !_menuItem_AutoStart.Checked;
-            // Refresh menu item checked state from actual AutoStart state (if program was able to change the state).
+            // Refresh menu item checked state from the actual AutoStart state (if the program was able to change it).
             _menuItem_AutoStart.Checked = UserAutoStart;
         }
 
-        /// <summary> Click on "Remember enabled state" menu item - Toggle the state and save it and the current state to settings.</summary>
+        /// <summary> Click on "Remember enabled state" menu item - toggle the persistence of the enabled state.</summary>
         private void Click_SaveEnabledState(object sender, EventArgs e)
         {
-            _menuItem_RememberEnabledState.Checked = !_menuItem_RememberEnabledState.Checked;
-            UserPersistEnabled = _menuItem_RememberEnabledState.Checked;
+            UserPersistEnabled = !UserPersistEnabled;
+            _menuItem_RememberEnabledState.Checked = UserPersistEnabled;
         }
 
-        /// <summary> On application exit - hide tray icon, disarm execution state and dispose the timers.</summary>
+        /// <summary> On application exit - hide tray icon and release everything the domains asserted.</summary>
         private void OnApplicationExit(object sender, EventArgs e)
         {
             _trayIcon.Visible = false;
-            DisarmExecutionState();
-            _refreshTimer.Dispose();
-            _appsWatchTimer.Dispose();
+            _controller.Dispose();
             _themeWatchTimer.Dispose();
-        }
-        /// <summary> Event handler for the change of apps list </summary>
-        private void OnWatchedAppsChanged()
-        {
-            // Save list to settings
-            AppsConfig.Save(WatchedApps.ToList());
-            // Clear cached HashSets
-            _nameSet = _pathSet = null;
-            // Re-evaluate watching timer and effective state
-            OnUserSettingsChanged();
-        }
-
-        /// <summary> App watching timer tick - checks running apps</summary>
-        private void AppsWatchTimer_Tick(object sender, EventArgs e)
-        {
-            var apps = WatchedApps.ToList();
-            bool anyRunning = AreAnyConfiguredAppsRunning(apps);
-            if (_anyWatchedAppRunning != anyRunning)
-            {
-                _anyWatchedAppRunning = anyRunning;
-                // This change may affect EffectivePreventSleep
-                ApplySleepPrevention();
-            }
         }
 
         /// <summary> Taskbar color mode tick - refresh the inactive icon if the user switched light/dark theme.</summary>
@@ -311,90 +290,6 @@ namespace NoSleep
                 UpdateInactiveTrayIcon();
         }
 
-        // PRIVATE METHODS
-        /// <summary> Disarm the execution state. If ES_CONTINUOUS was used, it will be released.</summary>
-        private void DisarmExecutionState()
-        {
-            _refreshTimer.Stop();
-            // If we had ES_CONTINUOUS enabled - we have to release it by calling SetThreadExecutionState with it alone (i.e. with no other flags).
-            if (ExecutionMode.HasFlag(EXECUTION_STATE.ES_CONTINUOUS))
-                WinU.SetThreadExecutionState(EXECUTION_STATE.ES_CONTINUOUS);
-        }
-
-        /// <summary> Caching watched apps paths </summary>
-        private HashSet<string> _pathSet;
-        /// <summary> Caching watched apps names </summary>
-        private HashSet<string> _nameSet;
-        /// <summary> Checks if any of Watched apps are currently running. </summary>
-        private bool AreAnyConfiguredAppsRunning(List<AppEntry> apps)
-        {
-            // If there are no apps - nothing to watch. Explicit true, if we reached here somewhy.
-            if (apps.Count == 0)
-                return true;
-
-            if (_pathSet is null)
-            {
-                // We have apps, but no cached paths? Prepare HashSets with paths and names
-                _pathSet = apps.Select(app => app.ExePath)
-                              .Where(path => !string.IsNullOrWhiteSpace(path))
-                              .ToHashSet(StringComparer.OrdinalIgnoreCase);
-                _nameSet = apps.Select(app => app.Name)
-                              .Where(name => !string.IsNullOrWhiteSpace(name))
-                              .ToHashSet(StringComparer.OrdinalIgnoreCase);
-            }
-
-            // Test running processes to see if we have any of the wanted apps running
-            return Process.GetProcesses().Any(p =>
-            {
-                // Exception free Process path extraction.
-                // Standard Process.MainModule throws exceptions, which consume quite a lot of cpu.
-                string path = p.TryGetExecutablePath();
-                if ((path != null) && _pathSet.Contains(path, StringComparer.OrdinalIgnoreCase))
-                    return true;
-
-                // Fallback to name-only detection, if we can't get process path.
-                return _nameSet.Contains(p.ProcessName, StringComparer.OrdinalIgnoreCase);
-            });
-        }
-        /// <summary> A single point to reflect user settings change into effective app state </summary>
-        private void OnUserSettingsChanged()
-        {
-            // APPS WATCHING: timer & menu item checked state
-            _appsWatchTimer.Enabled = IsWatchingFeatureActive;
-            this._menuItem_ConfigureApps.Checked = IsWatchingFeatureActive;
-
-            // SLEEP PREVENTION: recompute effective sleep prevention
-            ApplySleepPrevention();
-        }
-
-
-        /// <summary> SLEEP PREVENTION: updates timer and app effective state </summary>
-        private void ApplySleepPrevention()
-        {
-            // The color mode watcher is only needed while the inactive icon is displayed.
-            _themeWatchTimer.Enabled = !EffectivePreventSleep;
-
-            if (EffectivePreventSleep)
-            {
-                // Arm refresh timer if not already
-                if (!_refreshTimer.Enabled)
-                {
-                    WinU.SetThreadExecutionState(ExecutionMode); // immediate first call
-                    _refreshTimer.Start();
-                }
-                _trayIcon.Icon = Resources.TrayIcon;
-            }
-            else
-            {
-                if (_refreshTimer.Enabled)
-                {
-                    _refreshTimer.Stop();
-                    WinU.SetThreadExecutionState(EXECUTION_STATE.ES_CONTINUOUS); // release
-                }
-                UpdateInactiveTrayIcon();
-            }
-        }
-
         /// <summary> Sets the inactive ("zzz") tray icon, white on dark taskbars so it stays visible (issue #16).
         /// Always applies: the enabled state overwrites the icon, so it must be re-set on every transition into the inactive state. </summary>
         private void UpdateInactiveTrayIcon()
@@ -402,6 +297,5 @@ namespace NoSleep
             _taskbarLight = WinU.IsTaskbarLightTheme();
             _trayIcon.Icon = _taskbarLight.Value ? Resources.TrayIconInactive : Resources.TrayIconInactiveWhite;
         }
-
     }
 }

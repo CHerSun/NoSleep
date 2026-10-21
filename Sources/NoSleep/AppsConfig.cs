@@ -1,4 +1,5 @@
 using NoSleep.Properties;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -32,11 +33,14 @@ namespace NoSleep
 
         public static void Save(List<AppEntry> apps)
         {
-            // Can we avoid saving? Do we really have changes?
-            var newDistinctPaths = new HashSet<string>(apps.Select(x => x.ExePath));
-            var oldDistinctPaths = new HashSet<string>(Load().Select(x => x.ExePath));
-
-            if (newDistinctPaths == oldDistinctPaths)
+            // Do we really have changes? Names must be part of the comparison:
+            // the grid allows renaming an entry without touching its path.
+            var newPaths = new HashSet<string>(apps.Select(x => x.ExePath), StringComparer.OrdinalIgnoreCase);
+            var newNames = new HashSet<string>(apps.Select(x => x.Name), StringComparer.OrdinalIgnoreCase);
+            var oldApps = Load();
+            var oldPaths = new HashSet<string>(oldApps.Select(x => x.ExePath), StringComparer.OrdinalIgnoreCase);
+            var oldNames = new HashSet<string>(oldApps.Select(x => x.Name), StringComparer.OrdinalIgnoreCase);
+            if (newPaths.SetEquals(oldPaths) && newNames.SetEquals(oldNames))
                 return;
 
             // We reached here = some changes. Save actually.
