@@ -116,6 +116,21 @@
   <data name="Tooltip_BlockLidSleep" xml:space="preserve">
     <value>当 NoSleep 正在阻止睡眠时，合上盖子不会使设备进入睡眠。禁用或退出 NoSleep 时会恢复原来的盖子动作。</value>
   </data>
+  <data name="TrayMenu_SimulateActivity" xml:space="preserve">
+    <value>模拟活动</value>
+  </data>
+  <data name="TrayMenu_SimulateActivityOff" xml:space="preserve">
+    <value>关闭</value>
+  </data>
+  <data name="TrayMenu_SimulateActivityPrevent" xml:space="preserve">
+    <value>阻止睡眠尝试</value>
+  </data>
+  <data name="TrayMenu_SimulateActivityPresence" xml:space="preserve">
+    <value>模拟用户在线</value>
+  </data>
+  <data name="Tooltip_SimulateActivity" xml:space="preserve">
+    <value>NoSleep 如何应对现代待机下电源请求无法覆盖的睡眠触发。“阻止睡眠尝试”会在系统尝试睡眠时以短暂的活动爆发作出反应——您可能瞬间显示“活跃”。“模拟用户在线”让您始终保持活跃：聊天不会空闲，屏幕和会话不会锁定；这也是电池供电下唯一能无限保持唤醒的方式。副作用详见 README。</value>
+  </data>
   <data name="Msg_InstanceRunning" xml:space="preserve">
     <value>{0} 实例已在运行。</value>
   </data>

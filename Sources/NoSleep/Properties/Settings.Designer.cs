@@ -174,5 +174,17 @@ namespace NoSleep.Properties {
                 this["LidOverrideSnapshot"] = value;
             }
         }
+
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public int SimulateActivity {
+            get {
+                return ((int)(this["SimulateActivity"]));
+            }
+            set {
+                this["SimulateActivity"] = value;
+            }
+        }
     }
 }

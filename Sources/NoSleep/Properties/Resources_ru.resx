@@ -116,6 +116,21 @@
   <data name="Tooltip_BlockLidSleep" xml:space="preserve">
     <value>Пока NoSleep препятствует сну, закрытие крышки не усыпит машину. Исходное действие крышки восстанавливается при отключении или выходе из NoSleep.</value>
   </data>
+  <data name="TrayMenu_SimulateActivity" xml:space="preserve">
+    <value>Имитация активности</value>
+  </data>
+  <data name="TrayMenu_SimulateActivityOff" xml:space="preserve">
+    <value>Выключено</value>
+  </data>
+  <data name="TrayMenu_SimulateActivityPrevent" xml:space="preserve">
+    <value>Препятствовать попыткам сна</value>
+  </data>
+  <data name="TrayMenu_SimulateActivityPresence" xml:space="preserve">
+    <value>Имитировать присутствие пользователя</value>
+  </data>
+  <data name="Tooltip_SimulateActivity" xml:space="preserve">
+    <value>Как NoSleep борется с триггерами сна, которые не покрываются запросами питания на Modern Standby. «Препятствовать попыткам сна» реагирует коротким всплеском активности, когда система пытается уснуть — возможно кратковременное появление статуса «активен». «Имитировать присутствие пользователя» держит вас постоянно активным: чаты не простаивают, экран и сессия не блокируются; это также единственный способ не заснуть на батарее бессрочно. Побочные эффекты описаны в README.</value>
+  </data>
   <data name="Msg_InstanceRunning" xml:space="preserve">
     <value>Экземпляр {0} уже запущен.</value>
   </data>

@@ -175,6 +175,21 @@
   <data name="Tooltip_BlockLidSleep" xml:space="preserve">
     <value>While NoSleep prevents sleep, closing the lid will not put the machine to sleep. The original lid action is restored when NoSleep is disabled or exits.</value>
   </data>
+  <data name="TrayMenu_SimulateActivity" xml:space="preserve">
+    <value>Simulate activity</value>
+  </data>
+  <data name="TrayMenu_SimulateActivityOff" xml:space="preserve">
+    <value>Off</value>
+  </data>
+  <data name="TrayMenu_SimulateActivityPrevent" xml:space="preserve">
+    <value>Prevent sleep attempts</value>
+  </data>
+  <data name="TrayMenu_SimulateActivityPresence" xml:space="preserve">
+    <value>Simulate user presence</value>
+  </data>
+  <data name="Tooltip_SimulateActivity" xml:space="preserve">
+    <value>How NoSleep fights sleep triggers that power requests cannot cover on Modern Standby. "Prevent sleep attempts" reacts with a short burst of activity when the system tries to sleep - you may briefly appear active. "Simulate user presence" keeps you permanently active: chats never idle and the screen and session never lock; it is also the only way to stay awake indefinitely on battery. Side effects are described in the README.</value>
+  </data>
   <data name="Msg_InstanceRunning" xml:space="preserve">
     <value>{0} instance is already running.</value>
   </data>
