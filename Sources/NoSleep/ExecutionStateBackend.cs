@@ -20,11 +20,11 @@ namespace NoSleep
             _refreshTimer.Tick += (s, e) => Refresh();
         }
 
-        public void Arm(bool keepDisplayOn)
+        public void Arm(SleepOptions options)
         {
             _mode = EXECUTION_STATE.ES_CONTINUOUS | EXECUTION_STATE.ES_SYSTEM_REQUIRED |
                     EXECUTION_STATE.ES_AWAYMODE_REQUIRED;
-            if (keepDisplayOn)
+            if (options.KeepDisplayOn)
                 _mode |= EXECUTION_STATE.ES_DISPLAY_REQUIRED;
             Refresh();
             _refreshTimer.Start();

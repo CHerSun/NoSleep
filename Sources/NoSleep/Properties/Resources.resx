@@ -169,6 +169,12 @@
   <data name="Tooltip_KeepScreenOn" xml:space="preserve">
     <value>If display should be kept always on in addition to keeping the system on.</value>
   </data>
+  <data name="TrayMenu_BlockLidSleep" xml:space="preserve">
+    <value>Block sleep on lid close</value>
+  </data>
+  <data name="Tooltip_BlockLidSleep" xml:space="preserve">
+    <value>While NoSleep prevents sleep, closing the lid will not put the machine to sleep. The original lid action is restored when NoSleep is disabled or exits.</value>
+  </data>
   <data name="Msg_InstanceRunning" xml:space="preserve">
     <value>{0} instance is already running.</value>
   </data>

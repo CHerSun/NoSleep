@@ -12,6 +12,7 @@ namespace NoSleep
     {
         private readonly ISleepBackend _backend;
         private readonly AppMonitor _monitor;
+        private readonly SleepOptions _options = new SleepOptions();
 
         public SleepController(ISleepBackend backend, AppMonitor monitor)
         {
@@ -22,13 +23,20 @@ namespace NoSleep
 
         public bool UserEnabled { get; private set; }
 
-        public bool KeepScreenOn { get; private set; }
+        public bool KeepScreenOn => _options.KeepDisplayOn;
+
+        public bool BlockLidSleep => _options.BlockLidSleep;
+
+        public int SimulateActivity => _options.SimulateActivity;
 
         /// <summary> Whether the apps-watching feature currently gates prevention (watching enabled AND list non-empty). </summary>
         public bool WatchingActive { get; private set; }
 
         /// <summary> Same formula as 1.5.x: enabled, and (not watching, or a watched app is running). </summary>
         public bool EffectivePreventSleep => UserEnabled && (!WatchingActive || _monitor.AnyRunning);
+
+        /// <summary> True when the backend's lid override is actually in effect (requested AND succeeded). </summary>
+        public bool LidOverrideEffective => _backend is ModernStandbyBackend ms && ms.LidOverrideEffective;
 
         /// <summary> Raised on the UI thread after every state transition. </summary>
         public event EventHandler StateChanged;
@@ -43,12 +51,29 @@ namespace NoSleep
 
         public void SetKeepScreenOn(bool value)
         {
-            if (KeepScreenOn == value)
+            if (_options.KeepDisplayOn == value)
                 return;
-            KeepScreenOn = value;
+            _options.KeepDisplayOn = value;
             Apply();
         }
 
+        public void SetBlockLidSleep(bool value)
+        {
+            if (_options.BlockLidSleep == value)
+                return;
+            _options.BlockLidSleep = value;
+            Apply();
+        }
+
+        public void SetSimulateActivity(int mode)
+        {
+            if (_options.SimulateActivity == mode)
+                return;
+            _options.SimulateActivity = mode;
+            Apply();
+        }
+
+        /// <summary> Whether the watching feature should gate prevention; drives the monitor timer. </summary>
         public void SetWatchingActive(bool value)
         {
             if (WatchingActive == value)
@@ -62,7 +87,7 @@ namespace NoSleep
         public void Apply()
         {
             if (EffectivePreventSleep)
-                _backend.Arm(KeepScreenOn);
+                _backend.Arm(_options);
             else
                 _backend.Disarm();
             StateChanged?.Invoke(this, EventArgs.Empty);

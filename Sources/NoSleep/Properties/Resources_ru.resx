@@ -110,6 +110,12 @@
   <data name="Tooltip_KeepScreenOn" xml:space="preserve">
     <value>Держать ли дисплей всегда включённым в дополнение к системе.</value>
   </data>
+  <data name="TrayMenu_BlockLidSleep" xml:space="preserve">
+    <value>Не давать уснуть при закрытии крышки</value>
+  </data>
+  <data name="Tooltip_BlockLidSleep" xml:space="preserve">
+    <value>Пока NoSleep препятствует сну, закрытие крышки не усыпит машину. Исходное действие крышки восстанавливается при отключении или выходе из NoSleep.</value>
+  </data>
   <data name="Msg_InstanceRunning" xml:space="preserve">
     <value>Экземпляр {0} уже запущен.</value>
   </data>

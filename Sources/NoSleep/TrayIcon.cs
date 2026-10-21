@@ -18,6 +18,7 @@ namespace NoSleep
         private ToolStripMenuItem _menuItem_ConfigureApps;
         private ToolStripMenuItem _menuItem_Enabled;
         private ToolStripMenuItem _menuItem_DisplayRequired;
+        private ToolStripMenuItem _menuItem_BlockLidSleep;
         private ToolStripMenuItem _menuItem_AutoStart;
         private ToolStripMenuItem _menuItem_RememberEnabledState;
         // --- Timers ---
@@ -88,6 +89,20 @@ namespace NoSleep
                 _controller.SetKeepScreenOn(value);
             }
         }
+        /// <summary> Whether closing the lid must not put the machine to sleep while prevention
+        /// is active (Modern Standby + lid only; hidden otherwise). </summary>
+        public bool UserBlockLidSleep
+        {
+            get => Settings.Default.BlockLidSleep;
+            set
+            {
+                if (Settings.Default.BlockLidSleep == value)
+                    return;
+                Settings.Default.BlockLidSleep = value;
+                Settings.Default.Save();
+                _controller.SetBlockLidSleep(value);
+            }
+        }
         public bool UserAutoStart
         {
             get => Tools.AutostartCheck();
@@ -117,6 +132,9 @@ namespace NoSleep
             if (Settings.Default.WatchedApps == null)
                 Settings.Default.WatchedApps = new System.Collections.Specialized.StringCollection();
 
+            // Self-heal a lid override left behind by a crashed previous run, before anything arms it again.
+            LidOverride.Heal();
+
             // Load watched apps from settings; persist on every change
             WatchedApps = new BindingList<AppEntry>(AppsConfig.Load());
             WatchedApps.ListChanged += (s, e) =>
@@ -135,13 +153,19 @@ namespace NoSleep
             _trayIcon.Visible = true;
 
             // Domains. Wired after the UI exists: state transitions below refresh the menu and icon.
+            // Routing: Modern Standby machines get the S0 backend, everything else keeps the classic one.
             _appMonitor = new AppMonitor(WatchedApps, Settings.Default.WatchAppsIntervalMs);
-            _controller = new SleepController(new ExecutionStateBackend(Settings.Default.RefreshIntervalMs), _appMonitor);
+            var backend = PowerPlatform.SleepMode == SleepMode.ModernStandby
+                ? (ISleepBackend)new ModernStandbyBackend(Settings.Default.RefreshIntervalMs)
+                : new ExecutionStateBackend(Settings.Default.RefreshIntervalMs);
+            _controller = new SleepController(backend, _appMonitor);
             _controller.StateChanged += (s, e) => RefreshFromState();
 
             // Apply initial state.
             _appMonitor.Initialize(); // real watch answer before the first Apply, not an assumption
             _controller.SetKeepScreenOn(Settings.Default.DisplayRequired);
+            if (_menuItem_BlockLidSleep != null)
+                _controller.SetBlockLidSleep(Settings.Default.BlockLidSleep);
             // BEHAVIOR: initial Enabled state depends on the user preference for persistence between restarts.
             _controller.SetUserEnabled(!Settings.Default.SaveEnabledState || Settings.Default.EnabledState);
             SyncWatching();
@@ -197,6 +221,17 @@ namespace NoSleep
             };
             _menuItem_DisplayRequired.Click += Click_DisplayRequired;
 
+            // "Block sleep on lid close" exists only where it does something: Modern Standby + a lid.
+            if (PowerPlatform.SleepMode == SleepMode.ModernStandby && PowerPlatform.LidPresent)
+            {
+                _menuItem_BlockLidSleep = new ToolStripMenuItem(Strings.TrayMenu_BlockLidSleep)
+                {
+                    Checked = Settings.Default.BlockLidSleep,
+                    ToolTipText = Strings.Tooltip_BlockLidSleep
+                };
+                _menuItem_BlockLidSleep.Click += Click_BlockLidSleep;
+            }
+
             // Sleep-mode indicator: non-interactive info line at the very top (issue #8).
             // The mode cannot change without a reboot, so the text is fixed for the run.
             var modeText = PowerPlatform.SleepMode == SleepMode.ModernStandby ? Strings.TrayMenu_SleepModeModern
@@ -216,6 +251,8 @@ namespace NoSleep
             _trayIcon.ContextMenuStrip.Items.Add(new ToolStripSeparator());
             _trayIcon.ContextMenuStrip.Items.Add(_menuItem_AutoStart);
             _trayIcon.ContextMenuStrip.Items.Add(_menuItem_DisplayRequired);
+            if (_menuItem_BlockLidSleep != null)
+                _trayIcon.ContextMenuStrip.Items.Add(_menuItem_BlockLidSleep);
             _trayIcon.ContextMenuStrip.Items.Add(_menuItem_RememberEnabledState);
             _trayIcon.ContextMenuStrip.Items.Add(new ToolStripSeparator());
             _trayIcon.ContextMenuStrip.Items.Add(_menuItem_ConfigureApps);
@@ -237,6 +274,13 @@ namespace NoSleep
             _menuItem_Enabled.Checked = _controller.UserEnabled;
             _menuItem_DisplayRequired.Checked = _controller.KeepScreenOn;
             _menuItem_ConfigureApps.Checked = IsWatchingFeatureActive;
+            if (_menuItem_BlockLidSleep != null)
+            {
+                _menuItem_BlockLidSleep.Checked = _controller.BlockLidSleep;
+                // Honest degradation: if the override is wanted but the power APIs refused it,
+                // gray the item out instead of showing a checked box that lies.
+                _menuItem_BlockLidSleep.Enabled = !_controller.BlockLidSleep || _controller.LidOverrideEffective;
+            }
 
             // The color mode watcher is only needed while the inactive icon is displayed.
             _themeWatchTimer.Enabled = !EffectivePreventSleep;
@@ -265,6 +309,12 @@ namespace NoSleep
         private void Click_DisplayRequired(object sender, EventArgs e)
         {
             UserKeepScreenOn = !UserKeepScreenOn;
+        }
+
+        /// <summary> Click on "Block sleep on lid close" menu item - toggle the lid override.</summary>
+        private void Click_BlockLidSleep(object sender, EventArgs e)
+        {
+            UserBlockLidSleep = !UserBlockLidSleep;
         }
 
         /// <summary> Click on "Configure apps" menu item - show the form to adjust the apps watch list. </summary>

@@ -138,5 +138,41 @@ namespace NoSleep.Properties {
                 return ((int)(this["WatchAppsIntervalMs"]));
             }
         }
+
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool BlockLidSleep {
+            get {
+                return ((bool)(this["BlockLidSleep"]));
+            }
+            set {
+                this["BlockLidSleep"] = value;
+            }
+        }
+
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool LidOverrideArmed {
+            get {
+                return ((bool)(this["LidOverrideArmed"]));
+            }
+            set {
+                this["LidOverrideArmed"] = value;
+            }
+        }
+
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string LidOverrideSnapshot {
+            get {
+                return ((string)(this["LidOverrideSnapshot"]));
+            }
+            set {
+                this["LidOverrideSnapshot"] = value;
+            }
+        }
     }
 }

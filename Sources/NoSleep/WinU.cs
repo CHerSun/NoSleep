@@ -61,6 +61,112 @@ namespace NoSleep
             }
         }
 
+        // --- power scheme interop (lid-close action override; powrprof.dll) ---
+        // Everything here works without elevation (S0-FINDINGS.md, T03).
+
+        [DllImport("powrprof.dll")]
+        static internal extern uint PowerGetActiveScheme(IntPtr rootPowerKey, out IntPtr activePolicyGuid);
+
+        [DllImport("powrprof.dll")]
+        static internal extern uint PowerSetActiveScheme(IntPtr rootPowerKey, IntPtr schemeGuid);
+
+        [DllImport("powrprof.dll")]
+        static internal extern uint PowerReadACValueIndex(IntPtr rootPowerKey, IntPtr schemeGuid, IntPtr subGroupGuid, IntPtr settingGuid, out uint value);
+
+        [DllImport("powrprof.dll")]
+        static internal extern uint PowerReadDCValueIndex(IntPtr rootPowerKey, IntPtr schemeGuid, IntPtr subGroupGuid, IntPtr settingGuid, out uint value);
+
+        [DllImport("powrprof.dll")]
+        static internal extern uint PowerWriteACValueIndex(IntPtr rootPowerKey, IntPtr schemeGuid, IntPtr subGroupGuid, IntPtr settingGuid, uint value);
+
+        [DllImport("powrprof.dll")]
+        static internal extern uint PowerWriteDCValueIndex(IntPtr rootPowerKey, IntPtr schemeGuid, IntPtr subGroupGuid, IntPtr settingGuid, uint value);
+
+        [DllImport("kernel32.dll")]
+        static private extern IntPtr LocalFree(IntPtr hMem);
+
+        /// <summary> Marshal a GUID string into unmanaged memory (caller frees with <see cref="FreeGuidPtr"/>). </summary>
+        static internal IntPtr AllocGuidPtr(string guidText)
+        {
+            IntPtr p = Marshal.AllocHGlobal(16);
+            Marshal.Copy(new Guid(guidText).ToByteArray(), 0, p, 16);
+            return p;
+        }
+
+        static internal void FreeGuidPtr(IntPtr p) => Marshal.FreeHGlobal(p);
+
+        /// <summary> Active power scheme GUID text, or null on failure. The returned string is LocalFree'd. </summary>
+        internal static string GetActivePowerScheme()
+        {
+            if (PowerGetActiveScheme(IntPtr.Zero, out IntPtr p) != 0)
+                return null;
+            try
+            {
+                return ((Guid)Marshal.PtrToStructure(p, typeof(Guid))).ToString();
+            }
+            finally
+            {
+                LocalFree(p);
+            }
+        }
+
+        /// <summary> Read a scheme setting (AC or DC index). Returns null on failure. </summary>
+        internal static uint? ReadSchemeValue(string schemeGuid, string groupGuid, string settingGuid, bool ac)
+        {
+            IntPtr scheme = AllocGuidPtr(schemeGuid);
+            IntPtr group = AllocGuidPtr(groupGuid);
+            IntPtr setting = AllocGuidPtr(settingGuid);
+            try
+            {
+                uint value;
+                uint status = ac
+                    ? PowerReadACValueIndex(IntPtr.Zero, scheme, group, setting, out value)
+                    : PowerReadDCValueIndex(IntPtr.Zero, scheme, group, setting, out value);
+                return status == 0 ? (uint?)value : null;
+            }
+            finally
+            {
+                FreeGuidPtr(scheme);
+                FreeGuidPtr(group);
+                FreeGuidPtr(setting);
+            }
+        }
+
+        /// <summary> Write a scheme setting (AC or DC index). Returns true on success. </summary>
+        internal static bool WriteSchemeValue(string schemeGuid, string groupGuid, string settingGuid, uint value, bool ac)
+        {
+            IntPtr scheme = AllocGuidPtr(schemeGuid);
+            IntPtr group = AllocGuidPtr(groupGuid);
+            IntPtr setting = AllocGuidPtr(settingGuid);
+            try
+            {
+                uint status = ac
+                    ? PowerWriteACValueIndex(IntPtr.Zero, scheme, group, setting, value)
+                    : PowerWriteDCValueIndex(IntPtr.Zero, scheme, group, setting, value);
+                return status == 0;
+            }
+            finally
+            {
+                FreeGuidPtr(scheme);
+                FreeGuidPtr(group);
+                FreeGuidPtr(setting);
+            }
+        }
+
+        /// <summary> Re-apply the given scheme so pending per-setting writes take effect. </summary>
+        internal static bool ApplyPowerScheme(string schemeGuid)
+        {
+            IntPtr p = AllocGuidPtr(schemeGuid);
+            try
+            {
+                return PowerSetActiveScheme(IntPtr.Zero, p) == 0;
+            }
+            finally
+            {
+                FreeGuidPtr(p);
+            }
+        }
+
         // --- Windows color mode detection (used only to pick the inactive tray icon color) ---
         private const string ThemeKeyPath = @"Software\Microsoft\Windows\CurrentVersion\Themes\Personalize";
         /// <summary> Cached read-only handle to the Personalize key; saves ~640 B/call of the naive open+read+dispose pattern. </summary>
