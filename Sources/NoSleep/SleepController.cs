@@ -46,6 +46,7 @@ namespace NoSleep
             if (UserEnabled == value)
                 return;
             UserEnabled = value;
+            UpdateMonitorGate();
             Apply();
         }
 
@@ -79,9 +80,15 @@ namespace NoSleep
             if (WatchingActive == value)
                 return;
             WatchingActive = value;
-            _monitor.SetActive(value);
+            UpdateMonitorGate();
             Apply();
         }
+
+        /// <summary> The app scanner runs only while the whole chain is on:
+        /// user enabled AND watching active. Enabling therefore always evaluates optimistically
+        /// (the monitor reports "running/unknown" while off) and the monitor's reconcile scan
+        /// corrects the state shortly after. </summary>
+        private void UpdateMonitorGate() => _monitor.SetActive(UserEnabled && WatchingActive);
 
         /// <summary> Re-evaluate the effective state and reconcile the backend. Idempotent. </summary>
         public void Apply()

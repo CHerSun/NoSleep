@@ -177,8 +177,8 @@ namespace NoSleep
             _controller = new SleepController(backend, _appMonitor);
             _controller.StateChanged += (s, e) => RefreshFromState();
 
-            // Apply initial state.
-            _appMonitor.Initialize(); // real watch answer before the first Apply, not an assumption
+            // Apply initial state. Order matters only in that SetUserEnabled/SyncWatching below
+            // gate the app scanner (optimistic while off - see AppMonitor); Apply evaluates.
             _controller.SetKeepScreenOn(Settings.Default.DisplayRequired);
             if (_menuItem_BlockLidSleep != null)
                 _controller.SetBlockLidSleep(Settings.Default.BlockLidSleep);
