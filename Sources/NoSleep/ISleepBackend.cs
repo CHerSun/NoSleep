@@ -12,7 +12,8 @@ namespace NoSleep
         public bool BlockLidSleep { get; set; }
 
         /// <summary> Activity simulation mode: 0 = off, 1 = prevent sleep attempts (event-driven),
-        /// 2 = simulate user presence (continuous). Modern Standby only. </summary>
+        /// 2 = simulate user presence (continuous, invisible zero-move input), 3 = real mouse
+        /// movement (continuous, visible jiggle that returns home). Modern Standby only. </summary>
         public int SimulateActivity { get; set; }
     }
 

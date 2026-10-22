@@ -187,8 +187,23 @@
   <data name="TrayMenu_SimulateActivityPresence" xml:space="preserve">
     <value>Simulate user presence</value>
   </data>
+  <data name="TrayMenu_SimulateActivityReal" xml:space="preserve">
+    <value>Move the mouse (visible)</value>
+  </data>
   <data name="Tooltip_SimulateActivity" xml:space="preserve">
-    <value>How NoSleep fights sleep triggers that power requests cannot cover on Modern Standby. "Prevent sleep attempts" reacts with a short burst of activity when the system tries to sleep - you may briefly appear active. "Simulate user presence" keeps you permanently active: chats never idle and the screen and session never lock; it is also the only way to stay awake indefinitely on battery. Side effects are described in the README.</value>
+    <value>How NoSleep fights sleep triggers that power requests cannot cover on Modern Standby. Side effects are described in the README.</value>
+  </data>
+  <data name="Tooltip_SimulateActivityOff" xml:space="preserve">
+    <value>No activity simulation - power requests only.</value>
+  </data>
+  <data name="Tooltip_SimulateActivityPrevent" xml:space="preserve">
+    <value>React with a short burst of activity whenever the system tries to sleep.</value>
+  </data>
+  <data name="Tooltip_SimulateActivityPresence" xml:space="preserve">
+    <value>Continuous invisible activity: you always appear present, the cursor never moves. Also works on battery.</value>
+  </data>
+  <data name="Tooltip_SimulateActivityReal" xml:space="preserve">
+    <value>Continuous real cursor movement (returns to its place each time). The strongest option; you always appear active.</value>
   </data>
   <data name="Msg_InstanceRunning" xml:space="preserve">
     <value>{0} instance is already running.</value>

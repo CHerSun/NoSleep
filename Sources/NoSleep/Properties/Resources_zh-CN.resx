@@ -128,8 +128,23 @@
   <data name="TrayMenu_SimulateActivityPresence" xml:space="preserve">
     <value>模拟用户在线</value>
   </data>
+  <data name="TrayMenu_SimulateActivityReal" xml:space="preserve">
+    <value>移动鼠标（可见）</value>
+  </data>
   <data name="Tooltip_SimulateActivity" xml:space="preserve">
-    <value>NoSleep 如何应对现代待机下电源请求无法覆盖的睡眠触发。“阻止睡眠尝试”会在系统尝试睡眠时以短暂的活动爆发作出反应——您可能瞬间显示“活跃”。“模拟用户在线”让您始终保持活跃：聊天不会空闲，屏幕和会话不会锁定；这也是电池供电下唯一能无限保持唤醒的方式。副作用详见 README。</value>
+    <value>NoSleep 如何应对电源请求无法覆盖的睡眠触发。副作用见 README。</value>
+  </data>
+  <data name="Tooltip_SimulateActivityOff" xml:space="preserve">
+    <value>不模拟活动——仅使用电源请求。</value>
+  </data>
+  <data name="Tooltip_SimulateActivityPrevent" xml:space="preserve">
+    <value>每当系统尝试睡眠时，以短暂的活动爆发作出反应。</value>
+  </data>
+  <data name="Tooltip_SimulateActivityPresence" xml:space="preserve">
+    <value>持续不可见的活动：始终显示在线，光标不动。电池下同样有效。</value>
+  </data>
+  <data name="Tooltip_SimulateActivityReal" xml:space="preserve">
+    <value>持续的真实光标移动（每次都会回到原位）。最强的模式；您将始终显示为活跃。</value>
   </data>
   <data name="Msg_InstanceRunning" xml:space="preserve">
     <value>{0} 实例已在运行。</value>

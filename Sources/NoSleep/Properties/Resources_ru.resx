@@ -128,8 +128,23 @@
   <data name="TrayMenu_SimulateActivityPresence" xml:space="preserve">
     <value>Имитировать присутствие пользователя</value>
   </data>
+  <data name="TrayMenu_SimulateActivityReal" xml:space="preserve">
+    <value>Двигать мышью (заметно)</value>
+  </data>
   <data name="Tooltip_SimulateActivity" xml:space="preserve">
-    <value>Как NoSleep борется с триггерами сна, которые не покрываются запросами питания на Modern Standby. «Препятствовать попыткам сна» реагирует коротким всплеском активности, когда система пытается уснуть — возможно кратковременное появление статуса «активен». «Имитировать присутствие пользователя» держит вас постоянно активным: чаты не простаивают, экран и сессия не блокируются; это также единственный способ не заснуть на батарее бессрочно. Побочные эффекты описаны в README.</value>
+    <value>Как NoSleep борется с триггерами сна, не покрываемыми запросами питания. Побочные эффекты — в README.</value>
+  </data>
+  <data name="Tooltip_SimulateActivityOff" xml:space="preserve">
+    <value>Никакой имитации активности — только запросы питания.</value>
+  </data>
+  <data name="Tooltip_SimulateActivityPrevent" xml:space="preserve">
+    <value>Реагировать коротким всплеском активности на каждую попытку системы уснуть.</value>
+  </data>
+  <data name="Tooltip_SimulateActivityPresence" xml:space="preserve">
+    <value>Непрерывная невидимая активность: вы всегда «на месте», курсор не двигается. Работает и на батарее.</value>
+  </data>
+  <data name="Tooltip_SimulateActivityReal" xml:space="preserve">
+    <value>Непрерывное реальное движение курсора (каждый раз возвращается на место). Самый сильный режим; вы всегда выглядит активным.</value>
   </data>
   <data name="Msg_InstanceRunning" xml:space="preserve">
     <value>Экземпляр {0} уже запущен.</value>

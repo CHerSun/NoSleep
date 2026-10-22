@@ -76,11 +76,12 @@ Windows machines sleep in one of two ways, and NoSleep shows which one applies i
 - **Block sleep on lid close** — while NoSleep is enabled, it temporarily sets the lid action to "Do nothing" and restores your original setting when it is disabled or exits (also automatically restored on the next launch if NoSleep was killed). Closing the lid then leaves the machine running with the screen off — exactly like an external monitor setup.
 - **Simulate activity** — how NoSleep fights sleep triggers that power requests cannot cover on Modern Standby:
   - *Prevent sleep attempts* — when the system tries to sleep (lid close, sleep button, power menu), NoSleep reacts with a short burst of simulated input that immediately wakes it back up. You may briefly appear "active" in chats for a moment.
-  - *Simulate user presence* — NoSleep continuously simulates user activity. **Side effects:** you appear permanently active (chats never idle), and the screen and your session never lock on their own.
+  - *Simulate user presence* — NoSleep continuously simulates invisible user activity (input events that move nothing — the cursor never moves). **Side effects:** you appear permanently active (chats never idle), and the screen and your session never lock on their own.
+  - *Move the mouse (visible)* — like presence, but with real, visible mouse movement (the cursor returns to its place each time) — the strongest option, for systems where invisible activity is not enough.
 
 **Honest limits on Modern Standby:**
 
-- **On battery**, Windows terminates power requests 5 minutes after the sleep timeout — this is OS behavior no keep-awake request can override. *Simulate user presence* is the only mode that keeps an S0 laptop awake indefinitely on battery.
+- **On battery**, Windows terminates power requests 5 minutes after the sleep timeout — this is OS behavior no keep-awake request can override. Continuous presence simulation (*Simulate user presence* or *Move the mouse*) is the only way to keep an S0 laptop awake indefinitely on battery.
 - Explicitly choosing **Sleep** from the power menu (or the power button) is always honored by the OS on Modern Standby — only activity simulation defeats it. If you want the machine to sleep, disabling NoSleep is the intended path.
 - No tool should keep a laptop running in a bag indefinitely — that is how laptops overheat. NoSleep restores your settings the moment it is disabled or exits; do not leave it enabled unintentionally.
 

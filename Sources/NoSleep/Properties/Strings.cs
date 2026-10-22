@@ -116,6 +116,7 @@ namespace NoSleep.Properties
         internal static string TrayMenu_SimulateActivityOff => Get("TrayMenu_SimulateActivityOff");
         internal static string TrayMenu_SimulateActivityPrevent => Get("TrayMenu_SimulateActivityPrevent");
         internal static string TrayMenu_SimulateActivityPresence => Get("TrayMenu_SimulateActivityPresence");
+        internal static string TrayMenu_SimulateActivityReal => Get("TrayMenu_SimulateActivityReal");
         internal static string Tooltip_Autostart => Get("Tooltip_Autostart");
         internal static string Tooltip_RememberState => Get("Tooltip_RememberState");
         internal static string Tooltip_ConfigureApps => Get("Tooltip_ConfigureApps");
@@ -123,6 +124,10 @@ namespace NoSleep.Properties
         internal static string Tooltip_KeepScreenOn => Get("Tooltip_KeepScreenOn");
         internal static string Tooltip_BlockLidSleep => Get("Tooltip_BlockLidSleep");
         internal static string Tooltip_SimulateActivity => Get("Tooltip_SimulateActivity");
+        internal static string Tooltip_SimulateActivityOff => Get("Tooltip_SimulateActivityOff");
+        internal static string Tooltip_SimulateActivityPrevent => Get("Tooltip_SimulateActivityPrevent");
+        internal static string Tooltip_SimulateActivityPresence => Get("Tooltip_SimulateActivityPresence");
+        internal static string Tooltip_SimulateActivityReal => Get("Tooltip_SimulateActivityReal");
         internal static string Msg_InstanceRunning => Get("Msg_InstanceRunning");
         internal static string Msg_UnknownLanguage => Get("Msg_UnknownLanguage");
         internal static string Msg_AutostartRemoveFailed => Get("Msg_AutostartRemoveFailed");

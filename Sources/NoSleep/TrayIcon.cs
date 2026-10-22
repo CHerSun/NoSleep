@@ -20,7 +20,7 @@ namespace NoSleep
         private ToolStripMenuItem _menuItem_DisplayRequired;
         private ToolStripMenuItem _menuItem_BlockLidSleep;
         private ToolStripMenuItem _menuItem_SimulateActivity;
-        private readonly ToolStripMenuItem[] _sub_SimulateActivity = new ToolStripMenuItem[3];
+        private readonly ToolStripMenuItem[] _sub_SimulateActivity = new ToolStripMenuItem[4];
         private ToolStripMenuItem _menuItem_AutoStart;
         private ToolStripMenuItem _menuItem_RememberEnabledState;
         // --- Timers ---
@@ -251,11 +251,17 @@ namespace NoSleep
             }
 
             // Activity simulation submenu exists on every Modern Standby machine (no lid needed).
+            // Each choice carries its own short tooltip; the parent item only points to the README.
             if (PowerPlatform.SleepMode == SleepMode.ModernStandby)
             {
-                _sub_SimulateActivity[0] = new ToolStripMenuItem(Strings.TrayMenu_SimulateActivityOff);
-                _sub_SimulateActivity[1] = new ToolStripMenuItem(Strings.TrayMenu_SimulateActivityPrevent);
-                _sub_SimulateActivity[2] = new ToolStripMenuItem(Strings.TrayMenu_SimulateActivityPresence);
+                _sub_SimulateActivity[0] = new ToolStripMenuItem(Strings.TrayMenu_SimulateActivityOff)
+                { ToolTipText = Strings.Tooltip_SimulateActivityOff };
+                _sub_SimulateActivity[1] = new ToolStripMenuItem(Strings.TrayMenu_SimulateActivityPrevent)
+                { ToolTipText = Strings.Tooltip_SimulateActivityPrevent };
+                _sub_SimulateActivity[2] = new ToolStripMenuItem(Strings.TrayMenu_SimulateActivityPresence)
+                { ToolTipText = Strings.Tooltip_SimulateActivityPresence };
+                _sub_SimulateActivity[3] = new ToolStripMenuItem(Strings.TrayMenu_SimulateActivityReal)
+                { ToolTipText = Strings.Tooltip_SimulateActivityReal };
                 for (int mode = 0; mode < _sub_SimulateActivity.Length; mode++)
                 {
                     int captured = mode; // closure per item

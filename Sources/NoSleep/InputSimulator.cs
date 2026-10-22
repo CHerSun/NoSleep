@@ -63,5 +63,37 @@ namespace NoSleep
                 Thread.Sleep(10);
             }
         }
+
+        /// <summary>
+        /// Zero-delta mouse move: a real input event (resets idle timers, counts as activity,
+        /// acts as a wake source) that moves the pointer nowhere - the "zen" jiggle popularized
+        /// by MouseJiggler; proven to keep Modern Standby systems awake while being fully
+        /// invisible to the user.
+        /// </summary>
+        public static void ZenMove()
+        {
+            INPUT[] input = new INPUT[1];
+            input[0].type = InputMouse;
+            input[0].mi.dwFlags = MouseEventfMove; // dx = dy = 0
+            SendInput(1, input, Marshal.SizeOf(typeof(INPUT)));
+        }
+
+        /// <summary>
+        /// Two opposite moves in a single input batch: real, visible pointer movement that
+        /// returns to its starting position within the same tick ("real jiggle, home kept").
+        /// </summary>
+        public static void MoveAndReturn(int distance)
+        {
+            INPUT[] input = new INPUT[2];
+            input[0].type = InputMouse;
+            input[0].mi.dx = distance;
+            input[0].mi.dy = distance;
+            input[0].mi.dwFlags = MouseEventfMove;
+            input[1].type = InputMouse;
+            input[1].mi.dx = -distance;
+            input[1].mi.dy = -distance;
+            input[1].mi.dwFlags = MouseEventfMove;
+            SendInput(2, input, Marshal.SizeOf(typeof(INPUT)));
+        }
     }
 }

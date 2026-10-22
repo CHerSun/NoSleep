@@ -20,9 +20,10 @@ namespace NoSleep
     /// </summary>
     internal sealed class ModernStandbyBackend : ISleepBackend
     {
-        private const int PresenceIntervalMs = 1000; // "simulate presence" cadence (T06: 1 Hz)
+        private const int PresenceIntervalMs = 1000; // continuous-simulation cadence (T06: 1 Hz)
         private const int SustainIntervalMs = 500;   // post-event sustain cadence (~2 Hz)
         private const int SustainTicks = 40;         // ~20 s of sustain
+        private const int RealMoveDistance = 4;      // "real movement" jiggle size, px (MouseJiggler default)
 
         private readonly System.Windows.Forms.Timer _refreshTimer;
         private readonly System.Windows.Forms.Timer _activityTimer;
@@ -92,7 +93,7 @@ namespace NoSleep
         {
             _activityMode = mode;
             _sustainRemaining = 0;
-            if (mode == 2)
+            if (mode == 2 || mode == 3) // continuous: invisible presence / real mouse movement
             {
                 EnsureNotifications();
                 _activityTimer.Interval = PresenceIntervalMs;
@@ -137,13 +138,20 @@ namespace NoSleep
 
         private void ActivityTimer_Tick(object sender, EventArgs e)
         {
-            InputSimulator.Move(_flick, 0);
-            _flick = -_flick;
-            if (_activityMode == 1)
+            switch (_activityMode)
             {
-                // Sustain phase of "prevent" mode: stop after the budget is spent.
-                if (--_sustainRemaining <= 0)
-                    _activityTimer.Stop();
+                case 1: // sustain phase of "prevent": single alternating moves, budgeted
+                    InputSimulator.Move(_flick, 0);
+                    _flick = -_flick;
+                    if (--_sustainRemaining <= 0)
+                        _activityTimer.Stop();
+                    break;
+                case 2: // presence: invisible activity, pointer never moves
+                    InputSimulator.ZenMove();
+                    break;
+                case 3: // real movement: visible jiggle that returns home in the same batch
+                    InputSimulator.MoveAndReturn(RealMoveDistance);
+                    break;
             }
         }
 
