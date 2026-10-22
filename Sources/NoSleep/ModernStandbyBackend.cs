@@ -29,7 +29,6 @@ namespace NoSleep
         private readonly LidOverride _lidOverride = new LidOverride();
         private readonly SynchronizationContext _uiContext; // captured on the UI thread (ctor runs there)
         private PowerNotifications _notifications; // created on first need, kept for process lifetime
-        private SleepOptions _armed;
         private EXECUTION_STATE _mode = EXECUTION_STATE.None;
         private int _activityMode;          // 0 off / 1 prevent / 2 presence - while ARMED
         private int _sustainRemaining;
@@ -49,9 +48,13 @@ namespace NoSleep
 
         public void Arm(SleepOptions options)
         {
-            if (_armed != null && _armed.SameAs(options))
-                return; // reconcile: nothing changed
-
+            // NOTE: deliberately no "nothing changed" guard. The controller passes its live
+            // options instance, so comparing against the previously armed reference compares
+            // the object with itself and always says "unchanged" - the first version of this
+            // method had exactly that aliasing bug: option toggles while armed (lid override,
+            // activity mode, display flag) silently did nothing until a disable/enable cycle.
+            // Arm is only called on state transitions (the periodic re-arm goes through
+            // Refresh), and everything below is idempotent.
             _mode = EXECUTION_STATE.ES_CONTINUOUS | EXECUTION_STATE.ES_SYSTEM_REQUIRED;
             if (options.KeepDisplayOn)
                 _mode |= EXECUTION_STATE.ES_DISPLAY_REQUIRED;
@@ -64,7 +67,6 @@ namespace NoSleep
                 _lidOverride.Disarm();
 
             UpdateActivity(options.SimulateActivity);
-            _armed = options;
         }
 
         public void Disarm()
@@ -76,7 +78,6 @@ namespace NoSleep
             _lidOverride.Disarm();
             _activityTimer.Stop();
             _activityMode = 0;
-            _armed = null;
         }
 
         private void UpdateActivity(int mode)

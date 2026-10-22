@@ -14,12 +14,6 @@ namespace NoSleep
         /// <summary> Activity simulation mode: 0 = off, 1 = prevent sleep attempts (event-driven),
         /// 2 = simulate user presence (continuous). Modern Standby only. </summary>
         public int SimulateActivity { get; set; }
-
-        public bool SameAs(SleepOptions other) =>
-            other != null &&
-            KeepDisplayOn == other.KeepDisplayOn &&
-            BlockLidSleep == other.BlockLidSleep &&
-            SimulateActivity == other.SimulateActivity;
     }
 
     /// <summary>
