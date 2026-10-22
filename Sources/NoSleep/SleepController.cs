@@ -35,8 +35,9 @@ namespace NoSleep
         /// <summary> Same formula as 1.5.x: enabled, and (not watching, or a watched app is running). </summary>
         public bool EffectivePreventSleep => UserEnabled && (!WatchingActive || _monitor.AnyRunning);
 
-        /// <summary> True when the backend's lid override is actually in effect (requested AND succeeded). </summary>
-        public bool LidOverrideEffective => _backend is ModernStandbyBackend ms && ms.LidOverrideEffective;
+        /// <summary> True when the lid override is wanted but the power APIs refused it while
+        /// prevention was active (Modern Standby only). </summary>
+        public bool LidOverrideFailed => _backend is ModernStandbyBackend ms && ms.LidOverrideFailed;
 
         /// <summary> Raised on the UI thread after every state transition. </summary>
         public event EventHandler StateChanged;

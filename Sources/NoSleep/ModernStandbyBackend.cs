@@ -30,12 +30,16 @@ namespace NoSleep
         private readonly SynchronizationContext _uiContext; // captured on the UI thread (ctor runs there)
         private PowerNotifications _notifications; // created on first need, kept for process lifetime
         private EXECUTION_STATE _mode = EXECUTION_STATE.None;
+        private bool _lidOverrideFailed; // last arm attempt was refused by the power APIs (while wanted)
         private int _activityMode;          // 0 off / 1 prevent / 2 presence - while ARMED
         private int _sustainRemaining;
         private int _flick = 1;
 
-        /// <summary> True while the lid override is actually in effect (arm requested AND succeeded). </summary>
-        public bool LidOverrideEffective => _lidOverride.IsArmed;
+        /// <summary> True only when the override is wanted AND the power APIs refused it while
+        /// prevention was active. NOT armed because prevention is inactive (user disabled) is a
+        /// normal state and must never count as a failure - the setting simply applies on the
+        /// next enable. </summary>
+        public bool LidOverrideFailed => _lidOverrideFailed;
 
         public ModernStandbyBackend(int rearmIntervalMs)
         {
@@ -62,9 +66,12 @@ namespace NoSleep
             _refreshTimer.Start();
 
             if (options.BlockLidSleep)
-                _lidOverride.Arm(); // idempotent; failure leaves LidOverrideEffective = false (UI shows it)
+                _lidOverrideFailed = !_lidOverride.Arm(); // idempotent; false only on a real refusal
             else
+            {
                 _lidOverride.Disarm();
+                _lidOverrideFailed = false; // not wanted - nothing to report
+            }
 
             UpdateActivity(options.SimulateActivity);
         }
@@ -76,6 +83,7 @@ namespace NoSleep
                 WinU.SetThreadExecutionState(EXECUTION_STATE.ES_CONTINUOUS);
             _mode = EXECUTION_STATE.None;
             _lidOverride.Disarm();
+            _lidOverrideFailed = false; // inactive prevention is not a failure; retried on next Arm
             _activityTimer.Stop();
             _activityMode = 0;
         }

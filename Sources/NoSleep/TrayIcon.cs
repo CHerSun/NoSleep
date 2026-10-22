@@ -315,9 +315,12 @@ namespace NoSleep
             if (_menuItem_BlockLidSleep != null)
             {
                 _menuItem_BlockLidSleep.Checked = _controller.BlockLidSleep;
-                // Honest degradation: if the override is wanted but the power APIs refused it,
-                // gray the item out instead of showing a checked box that lies.
-                _menuItem_BlockLidSleep.Enabled = !_controller.BlockLidSleep || _controller.LidOverrideEffective;
+                // Principle: menu items are ALWAYS reconfigurable; behavior is gated on the
+                // user-enabled state, not the menu. The item grays out only for a real refusal:
+                // the override is wanted AND the power APIs rejected it while prevention was
+                // active. "Not applied right now because NoSleep is disabled" is normal and
+                // must never disable the item - the setting applies on the next enable.
+                _menuItem_BlockLidSleep.Enabled = !_controller.BlockLidSleep || !_controller.LidOverrideFailed;
             }
             if (_menuItem_SimulateActivity != null)
             {
