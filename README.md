@@ -1,5 +1,7 @@
 > 🌐 Languages: [English](README.md) | [Русский](README.ru.md) | [简体中文](README.zh-CN.md)
 
+[![GitHub Release](https://img.shields.io/github/v/release/CHerSun/NoSleep)](https://github.com/CHerSun/NoSleep/releases/latest)
+
 # NoSleep
 
 NoSleep is a lightweight tool that prevents Windows from automatically activating the screen saver, sleep mode, or lock screen. It's designed for situations where you can't change these settings yourself—for example, due to corporate-enforced policies. Inspired by Linux Caffeine.
@@ -75,13 +77,14 @@ Windows machines sleep in one of two ways, and NoSleep shows which one applies i
 
 - **Block sleep on lid close** — while NoSleep is enabled, it temporarily sets the lid action to "Do nothing" and restores your original setting when it is disabled or exits (also automatically restored on the next launch if NoSleep was killed). Closing the lid then leaves the machine running with the screen off — exactly like an external monitor setup.
 - **Simulate activity** — how NoSleep fights sleep triggers that power requests cannot cover on Modern Standby:
-  - *Prevent sleep attempts* — when the system tries to sleep (lid close, sleep button, power menu), NoSleep reacts with a short burst of simulated input that immediately wakes it back up. You may briefly appear "active" in chats for a moment.
-  - *Simulate user presence* — NoSleep continuously simulates invisible user activity (input events that move nothing — the cursor never moves). **Side effects:** you appear permanently active (chats never idle), and the screen and your session never lock on their own.
-  - *Move the mouse (visible)* — like presence, but with real, visible mouse movement (the cursor returns to its place each time) — the strongest option, for systems where invisible activity is not enough.
+  - *Prevent sleep attempts* — best-effort: when the system tries to sleep (sleep button, power menu), NoSleep reacts with a short burst of simulated input that aims to wake it right back up. You may briefly appear "active" in chats for a moment. For lid close, prefer the deterministic **Block sleep on lid close** option above.
+  - *Simulate user presence* — NoSleep continuously simulates invisible user activity (input events that move nothing — the cursor never moves), preventing **automatic** sleep. **Side effects:** you appear permanently active (chats never idle), and the screen and your session never lock on their own.
+  - *Move the mouse (visible)* — same purpose as presence simulation, but with real, visible mouse movement (the cursor returns to its place each time) — for systems where invisible activity is not enough.
+  - The continuous modes run at a randomized cadence (so the events are not a perfectly periodic pattern); advanced users can tune it via the `JiggleIntervalMs` / `JiggleJitterPercent` values in the standard settings file.
 
 **Honest limits on Modern Standby:**
 
-- **On battery**, Windows terminates power requests 5 minutes after the sleep timeout — this is OS behavior no keep-awake request can override. Continuous presence simulation (*Simulate user presence* or *Move the mouse*) is the only way to keep an S0 laptop awake indefinitely on battery.
+- **On battery**, Windows terminates power requests 5 minutes after the sleep timeout — this is OS behavior no keep-awake request can override. Continuous presence simulation (*Simulate user presence* or *Move the mouse*) is the only way to prevent automatic sleep indefinitely on battery.
 - Explicitly choosing **Sleep** from the power menu (or the power button) is always honored by the OS on Modern Standby — only activity simulation defeats it. If you want the machine to sleep, disabling NoSleep is the intended path.
 - No tool should keep a laptop running in a bag indefinitely — that is how laptops overheat. NoSleep restores your settings the moment it is disabled or exits; do not leave it enabled unintentionally.
 
