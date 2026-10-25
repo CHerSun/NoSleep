@@ -106,18 +106,27 @@ namespace NoSleep
             }
         }
         /// <summary> Activity simulation mode: 0 = off, 1 = prevent sleep attempts,
-        /// 2 = simulate user presence (Modern Standby only; hidden otherwise). </summary>
+        /// 2 = simulate user presence (invisible), 3 = move the mouse (visible).
+        /// (Modern Standby only; hidden otherwise.) Persisted as an int; invalid hand-edited
+        /// values fall back to Off. </summary>
         public int UserSimulateActivity
         {
-            get => Settings.Default.SimulateActivity;
+            get => (int)ValidatedActivity();
             set
             {
-                if (Settings.Default.SimulateActivity == value)
+                int current = (int)ValidatedActivity();
+                if (current == value)
                     return;
                 Settings.Default.SimulateActivity = value;
                 Settings.Default.Save();
-                _controller.SetSimulateActivity(value);
+                _controller.SetActivity(ValidatedActivity());
             }
+        }
+
+        private ActivityMode ValidatedActivity()
+        {
+            var mode = (ActivityMode)Settings.Default.SimulateActivity;
+            return Enum.IsDefined(typeof(ActivityMode), mode) ? mode : ActivityMode.Off;
         }
         public bool UserAutoStart
         {
@@ -170,9 +179,12 @@ namespace NoSleep
 
             // Domains. Wired after the UI exists: state transitions below refresh the menu and icon.
             // Routing: Modern Standby machines get the S0 backend, everything else keeps the classic one.
+            // Interval settings are read once here (startup), like every other setting.
             _appMonitor = new AppMonitor(WatchedApps, Settings.Default.WatchAppsIntervalMs);
             var backend = PowerPlatform.SleepMode == SleepMode.ModernStandby
-                ? (ISleepBackend)new ModernStandbyBackend(Settings.Default.RefreshIntervalMs)
+                ? (ISleepBackend)new ModernStandbyBackend(Settings.Default.RefreshIntervalMs,
+                                                           Settings.Default.JiggleIntervalMs,
+                                                           Settings.Default.JiggleJitterPercent)
                 : new ExecutionStateBackend(Settings.Default.RefreshIntervalMs);
             _controller = new SleepController(backend, _appMonitor);
             _controller.StateChanged += (s, e) => RefreshFromState();
@@ -183,7 +195,7 @@ namespace NoSleep
             if (_menuItem_BlockLidSleep != null)
                 _controller.SetBlockLidSleep(Settings.Default.BlockLidSleep);
             if (_menuItem_SimulateActivity != null)
-                _controller.SetSimulateActivity(Settings.Default.SimulateActivity);
+                _controller.SetActivity(ValidatedActivity());
             // BEHAVIOR: initial Enabled state depends on the user preference for persistence between restarts.
             _controller.SetUserEnabled(!Settings.Default.SaveEnabledState || Settings.Default.EnabledState);
             SyncWatching();
@@ -266,8 +278,7 @@ namespace NoSleep
                 {
                     int captured = mode; // closure per item
                     _sub_SimulateActivity[mode].Click += (s, e) => UserSimulateActivity = captured;
-                }
-                _menuItem_SimulateActivity = new ToolStripMenuItem(Strings.TrayMenu_SimulateActivity)
+                }                _menuItem_SimulateActivity = new ToolStripMenuItem(Strings.TrayMenu_SimulateActivity)
                 {
                     ToolTipText = Strings.Tooltip_SimulateActivity
                 };
@@ -302,6 +313,7 @@ namespace NoSleep
             _trayIcon.ContextMenuStrip.Items.Add(_menuItem_ConfigureApps);
             _trayIcon.ContextMenuStrip.Items.Add(new ToolStripSeparator());
             _trayIcon.ContextMenuStrip.Items.Add(_menuItem_Enabled);
+            _trayIcon.ContextMenuStrip.Items.Add(_menuItem_RememberEnabledState); // grouped with "Enabled"
             _trayIcon.ContextMenuStrip.Items.Add(_MenuItem_Close);
         }
 
@@ -331,7 +343,7 @@ namespace NoSleep
             if (_menuItem_SimulateActivity != null)
             {
                 for (int mode = 0; mode < _sub_SimulateActivity.Length; mode++)
-                    _sub_SimulateActivity[mode].Checked = _controller.SimulateActivity == mode;
+                    _sub_SimulateActivity[mode].Checked = (int)_controller.Activity == mode;
             }
 
             // The color mode watcher is only needed while the inactive icon is displayed.

@@ -2,6 +2,22 @@ using System;
 
 namespace NoSleep
 {
+    /// <summary> Activity simulation modes (the "Simulate activity" submenu). Numeric values
+    /// are persisted in the SimulateActivity user setting - do not renumber. </summary>
+    internal enum ActivityMode
+    {
+        Off = 0,
+        /// <summary> Event-driven: burst + sustain when a sleep attempt is reported (best effort;
+        /// the deterministic lid protection is the lid-close override). </summary>
+        PreventSleepAttempts = 1,
+        /// <summary> Continuous invisible activity (zero-delta input events): presence simulation
+        /// against automatic sleep. </summary>
+        SimulatePresence = 2,
+        /// <summary> Continuous visible mouse movement that returns home: presence simulation
+        /// for systems where invisible activity is not enough. </summary>
+        MoveMouse = 3,
+    }
+
     /// <summary> What the controller asks the backend to enforce while armed. </summary>
     internal sealed class SleepOptions
     {
@@ -11,10 +27,8 @@ namespace NoSleep
         /// <summary> Override the lid-close action to "Do nothing" (Modern Standby only). </summary>
         public bool BlockLidSleep { get; set; }
 
-        /// <summary> Activity simulation mode: 0 = off, 1 = prevent sleep attempts (event-driven),
-        /// 2 = simulate user presence (continuous, invisible zero-move input), 3 = real mouse
-        /// movement (continuous, visible jiggle that returns home). Modern Standby only. </summary>
-        public int SimulateActivity { get; set; }
+        /// <summary> Activity simulation mode (Modern Standby only). </summary>
+        public ActivityMode Activity { get; set; }
     }
 
     /// <summary>

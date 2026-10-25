@@ -20,19 +20,22 @@ namespace NoSleep
     /// </summary>
     internal sealed class ModernStandbyBackend : ISleepBackend
     {
-        private const int PresenceIntervalMs = 1000; // continuous-simulation cadence (T06: 1 Hz)
         private const int SustainIntervalMs = 500;   // post-event sustain cadence (~2 Hz)
         private const int SustainTicks = 40;         // ~20 s of sustain
         private const int RealMoveDistance = 4;      // "real movement" jiggle size, px (MouseJiggler default)
+        private const int MinJiggleIntervalMs = 100; // safety clamp for hand-edited settings
 
         private readonly System.Windows.Forms.Timer _refreshTimer;
         private readonly System.Windows.Forms.Timer _activityTimer;
         private readonly LidOverride _lidOverride = new LidOverride();
         private readonly SynchronizationContext _uiContext; // captured on the UI thread (ctor runs there)
+        private readonly int _jiggleIntervalMs;
+        private readonly int _jiggleJitterPercent;
+        private readonly Random _rnd = new Random();
         private PowerNotifications _notifications; // created on first need, kept for process lifetime
         private EXECUTION_STATE _mode = EXECUTION_STATE.None;
         private bool _lidOverrideFailed; // last arm attempt was refused by the power APIs (while wanted)
-        private int _activityMode;          // 0 off / 1 prevent / 2 presence - while ARMED
+        private ActivityMode _activityMode; // only non-Off while ARMED
         private int _sustainRemaining;
         private int _flick = 1;
 
@@ -42,9 +45,14 @@ namespace NoSleep
         /// next enable. </summary>
         public bool LidOverrideFailed => _lidOverrideFailed;
 
-        public ModernStandbyBackend(int rearmIntervalMs)
+        public ModernStandbyBackend(int rearmIntervalMs, int jiggleIntervalMs, int jiggleJitterPercent)
         {
             _uiContext = SynchronizationContext.Current ?? new SynchronizationContext();
+            // Continuous-mode cadence: randomized per tick so the events are not a perfectly
+            // periodic pattern (periodicity is trackable; settings are user-tunable, read once
+            // here on startup like every other setting).
+            _jiggleIntervalMs = Math.Max(MinJiggleIntervalMs, jiggleIntervalMs);
+            _jiggleJitterPercent = Math.Min(90, Math.Max(0, jiggleJitterPercent));
             _refreshTimer = new System.Windows.Forms.Timer { Interval = rearmIntervalMs };
             _refreshTimer.Tick += (s, e) => Refresh();
             _activityTimer = new System.Windows.Forms.Timer();
@@ -74,7 +82,7 @@ namespace NoSleep
                 _lidOverrideFailed = false; // not wanted - nothing to report
             }
 
-            UpdateActivity(options.SimulateActivity);
+            UpdateActivity(options.Activity);
         }
 
         public void Disarm()
@@ -86,26 +94,37 @@ namespace NoSleep
             _lidOverride.Disarm();
             _lidOverrideFailed = false; // inactive prevention is not a failure; retried on next Arm
             _activityTimer.Stop();
-            _activityMode = 0;
+            _activityMode = ActivityMode.Off;
         }
 
-        private void UpdateActivity(int mode)
+        private void UpdateActivity(ActivityMode mode)
         {
             _activityMode = mode;
             _sustainRemaining = 0;
-            if (mode == 2 || mode == 3) // continuous: invisible presence / real mouse movement
+            if (mode == ActivityMode.SimulatePresence || mode == ActivityMode.MoveMouse)
             {
+                // Continuous presence simulation at the (jittered) jiggle cadence.
                 EnsureNotifications();
-                _activityTimer.Interval = PresenceIntervalMs;
+                _activityTimer.Interval = NextJiggleInterval();
                 _activityTimer.Start();
             }
             else
             {
-                // Mode 1 idles between events; mode 0 does nothing at all.
+                // Prevent-mode idles between events; Off does nothing at all.
                 _activityTimer.Stop();
-                if (mode == 1)
+                if (mode == ActivityMode.PreventSleepAttempts)
                     EnsureNotifications();
             }
+        }
+
+        /// <summary> Uniformly randomized interval within +/- jitter around the base -
+        /// recomputed for every tick so no repeating pattern emerges. </summary>
+        private int NextJiggleInterval()
+        {
+            if (_jiggleJitterPercent <= 0)
+                return _jiggleIntervalMs;
+            int spread = Math.Max(1, (int)((long)_jiggleIntervalMs * _jiggleJitterPercent / 100));
+            return Math.Max(MinJiggleIntervalMs, _jiggleIntervalMs - spread + _rnd.Next(2 * spread + 1));
         }
 
         private void EnsureNotifications()
@@ -120,7 +139,7 @@ namespace NoSleep
 
         private void ReactToSleepAttempt()
         {
-            if (_activityMode != 1)
+            if (_activityMode != ActivityMode.PreventSleepAttempts)
                 return;
             InputSimulator.Burst(); // now, on the callback thread, inside/near the pre-suspend window
             // Sustain from the UI thread (the callback thread must not own timer state).
@@ -129,7 +148,7 @@ namespace NoSleep
 
         private void StartSustain()
         {
-            if (_activityMode != 1)
+            if (_activityMode != ActivityMode.PreventSleepAttempts)
                 return;
             _sustainRemaining = SustainTicks;
             _activityTimer.Interval = SustainIntervalMs;
@@ -140,17 +159,21 @@ namespace NoSleep
         {
             switch (_activityMode)
             {
-                case 1: // sustain phase of "prevent": single alternating moves, budgeted
+                case ActivityMode.PreventSleepAttempts: // sustain phase: single alternating moves, budgeted
                     InputSimulator.Move(_flick, 0);
                     _flick = -_flick;
                     if (--_sustainRemaining <= 0)
                         _activityTimer.Stop();
                     break;
-                case 2: // presence: invisible activity, pointer never moves
+
+                case ActivityMode.SimulatePresence: // invisible activity, pointer never moves
                     InputSimulator.ZenMove();
+                    _activityTimer.Interval = NextJiggleInterval();
                     break;
-                case 3: // real movement: visible jiggle that returns home in the same batch
+
+                case ActivityMode.MoveMouse: // visible jiggle that returns home in the same batch
                     InputSimulator.MoveAndReturn(RealMoveDistance);
+                    _activityTimer.Interval = NextJiggleInterval();
                     break;
             }
         }

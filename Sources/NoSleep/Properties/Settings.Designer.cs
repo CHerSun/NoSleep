@@ -186,5 +186,29 @@ namespace NoSleep.Properties {
                 this["SimulateActivity"] = value;
             }
         }
+
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("10000")]
+        public int JiggleIntervalMs {
+            get {
+                return ((int)(this["JiggleIntervalMs"]));
+            }
+            set {
+                this["JiggleIntervalMs"] = value;
+            }
+        }
+
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("20")]
+        public int JiggleJitterPercent {
+            get {
+                return ((int)(this["JiggleJitterPercent"]));
+            }
+            set {
+                this["JiggleJitterPercent"] = value;
+            }
+        }
     }
 }

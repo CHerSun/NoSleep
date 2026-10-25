@@ -27,7 +27,7 @@ namespace NoSleep
 
         public bool BlockLidSleep => _options.BlockLidSleep;
 
-        public int SimulateActivity => _options.SimulateActivity;
+        public ActivityMode Activity => _options.Activity;
 
         /// <summary> Whether the apps-watching feature currently gates prevention (watching enabled AND list non-empty). </summary>
         public bool WatchingActive { get; private set; }
@@ -67,11 +67,11 @@ namespace NoSleep
             Apply();
         }
 
-        public void SetSimulateActivity(int mode)
+        public void SetActivity(ActivityMode mode)
         {
-            if (_options.SimulateActivity == mode)
+            if (_options.Activity == mode)
                 return;
-            _options.SimulateActivity = mode;
+            _options.Activity = mode;
             Apply();
         }
 
