@@ -30,17 +30,19 @@ namespace NoSleep
 
         /// <summary>
         /// Restore a leftover override from a previous crashed run, if any. Call once at
-        /// startup, before arming anything.
+        /// startup, before arming anything. Keeps the snapshot armed (retried on the next
+        /// launch) if the restore cannot be completed.
         /// </summary>
         public static void Heal()
         {
             if (!Settings.Default.LidOverrideArmed)
                 return;
-            // A successful Disarm clears the flag; if it is still set, the last run died armed.
-            TryRestoreSnapshot(Settings.Default.LidOverrideSnapshot);
-            Settings.Default.LidOverrideArmed = false;
-            Settings.Default.LidOverrideSnapshot = "";
-            Settings.Default.Save();
+            if (TryRestoreSnapshot(Settings.Default.LidOverrideSnapshot))
+            {
+                Settings.Default.LidOverrideArmed = false;
+                Settings.Default.LidOverrideSnapshot = "";
+                Settings.Default.Save();
+            }
         }
 
         /// <summary> Apply the override. Returns false (and stays disarmed) if the power APIs refuse. </summary>
@@ -71,14 +73,16 @@ namespace NoSleep
             return true;
         }
 
-        /// <summary> Restore the original lid action. Skips the write if the current action is not ours
-        /// anymore (the user took control back via powercfg/Settings while we were armed). </summary>
+        /// <summary> Restore the original lid action. On a failed restore the override stays
+        /// armed (snapshot kept) so a later Disarm or the next launch's Heal retries it -
+        /// never report ourselves disarmed while the override may still be in place. </summary>
         public void Disarm()
         {
             if (!IsArmed)
                 return;
+            if (!TryRestoreSnapshot(_snapshot))
+                return;
             IsArmed = false;
-            TryRestoreSnapshot(_snapshot);
             _snapshot = null;
             Settings.Default.LidOverrideArmed = false;
             Settings.Default.LidOverrideSnapshot = "";
@@ -87,34 +91,46 @@ namespace NoSleep
 
         private static string FormatSnapshot(string scheme, uint ac, uint dc) => $"{scheme}|{ac}|{dc}";
 
-        private static void TryRestoreSnapshot(string snapshot)
+        /// <summary> Returns true when the originals are back in place (or were never ours anymore);
+        /// false when the restore could not be completed and should be retried later. </summary>
+        private static bool TryRestoreSnapshot(string snapshot)
         {
             try
             {
                 var parts = (snapshot ?? "").Split('|');
                 if (parts.Length != 3)
-                    return;
+                    return true; // malformed/empty snapshot: nothing of ours to restore
                 string scheme = parts[0];
                 uint ac = uint.Parse(parts[1]);
                 uint dc = uint.Parse(parts[2]);
 
-                // Skip the restore if the user has taken the lid action back into their own hands.
+                // Skip the restore only when BOTH reads succeeded AND both sides hold non-zero
+                // values - the user took the lid action back into their own hands. A FAILED
+                // read (null) means UNKNOWN, not "user's own value": skipping on a failed read
+                // would silently leave our override in place while we report ourselves
+                // disarmed (observed in the wild as: "zzz" icon, lid still overridden).
                 uint? nowAc = WinU.ReadSchemeValue(scheme, SubButtonsGroup, LidActionSetting, true);
                 uint? nowDc = WinU.ReadSchemeValue(scheme, SubButtonsGroup, LidActionSetting, false);
-                if (nowAc != LidDoNothing && nowDc != LidDoNothing)
-                    return;
+                if (nowAc == null || nowDc == null)
+                    return false; // cannot verify - keep the snapshot armed and retry later
+                if (nowAc.Value != LidDoNothing && nowDc.Value != LidDoNothing)
+                    return true;  // user's own values are in place - consider it restored
 
-                WinU.WriteSchemeValue(scheme, SubButtonsGroup, LidActionSetting, ac, true);
-                WinU.WriteSchemeValue(scheme, SubButtonsGroup, LidActionSetting, dc, false);
+                if (!WinU.WriteSchemeValue(scheme, SubButtonsGroup, LidActionSetting, ac, true) ||
+                    !WinU.WriteSchemeValue(scheme, SubButtonsGroup, LidActionSetting, dc, false))
+                    return false;
+
                 // Only re-apply when the snapshot scheme is the active one: re-activating a
                 // scheme the user switched away from would silently change their power plan.
                 if (string.Equals(WinU.GetActivePowerScheme(), scheme, StringComparison.OrdinalIgnoreCase))
                     WinU.ApplyPowerScheme(scheme);
+                return true;
             }
             catch
             {
-                // Best effort by design: a failed restore of a cosmetic-adjacent setting
-                // must never take the app down.
+                // Best effort by design: a failed restore must never take the app down -
+                // report failure so the armed snapshot survives and Heal retries.
+                return false;
             }
         }
     }
