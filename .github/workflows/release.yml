@@ -8,6 +8,7 @@ on:
 
 permissions:
   contents: write
+  id-token: write   # required for artifact attestations (build provenance)
 
 jobs:
   release:
@@ -78,6 +79,19 @@ jobs:
           git fetch --force origin "refs/tags/${{ github.ref_name }}:refs/tags/${{ github.ref_name }}"
           echo "name=$(git tag -l --format='%(contents:subject)' "${{ github.ref_name }}")" >> "$GITHUB_OUTPUT"
           git tag -l --format='%(contents:body)' "${{ github.ref_name }}" > release-notes.md
+
+      # Build-provenance attestations for the released executables; verify with:
+      #   gh attestation verify NoSleep.exe -R CHerSun/NoSleep
+      # Runs BEFORE publishing on purpose (fail-closed): an attestation failure must stop
+      # the release rather than leave published-but-unattested assets behind.
+      - name: Attest build provenance
+        if: github.event_name == 'push'
+        uses: actions/attest-build-provenance@v4
+        with:
+          subject-path: |
+            release-assets/NoSleep.exe
+            release-assets/NoSleep-net8.exe
+            release-assets/NoSleep-net10.exe
 
       - name: Publish GitHub release
         if: github.event_name == 'push'
