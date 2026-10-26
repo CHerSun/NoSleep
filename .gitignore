@@ -399,3 +399,6 @@ FodyWeavers.xsd
 
 # Per-machine environment notes for AI agents (see AGENTS.md)
 ENVIRONMENT.md
+
+# Local sleep-mode investigation working directory (committed copies live in tools/sleep-mode)
+s0-test-kit/
