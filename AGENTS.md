@@ -79,9 +79,9 @@ Key mechanics to preserve:
 ## Git workflow
 
 - **Commits:** Conventional Commits (`feat:`, `fix:`, `chore:`, `docs:`, `refactor:`, …). The commit type is the input for judging the version bump (`feat` → minor, `fix` → patch, breaking change → major).
-- **Versioning:** SemVer, defined in `NoSleep.csproj` (`<Version>` + `<FileVersion>`). Exactly **one** version bump lands on `master` per pull request, or per direct commit — intermediate commits within a PR don't each bump.
-- **Large or external changes go through a PR to `master`:** spec-level changes, anything touching 3+ files, and contributions from other people.
-- **Small changes may be committed directly to `master`:** 1–2 files with a small number of lines, and hotfixes.
+- **Versioning:** SemVer, defined in `NoSleep.csproj` (`<Version>` + `<FileVersion>`). Exactly **one** version bump lands on `main` per pull request, or per direct commit — intermediate commits within a PR don't each bump.
+- **Large or external changes go through a PR to `main`:** spec-level changes, anything touching 3+ files, and contributions from other people.
+- **Small changes may be committed directly to `main`:** 1–2 files with a small number of lines, and hotfixes.
 
 ## Releases & distribution contract
 
@@ -96,5 +96,5 @@ Releases are consumed externally by the Scoop `extras` bucket manifest (`nosleep
 ## Conventions
 
 - Contributor-facing rules (dependencies, single-exe, lean code) are formalized in [CONTRIBUTING.md](CONTRIBUTING.md) — keep it in sync when constraints change.
-- Main branch is `master`.
+- Main branch is `main`.
 - User-facing strings live in `.resx` resources (English neutral, Russian, Simplified Chinese — see the localization note under Key mechanics); UI is WinForms designer-supported.
