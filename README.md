@@ -6,6 +6,8 @@
 
 NoSleep is a lightweight tool that prevents Windows from automatically activating the screen saver, sleep mode, or lock screen. It's designed for situations where you can't change these settings yourself—for example, due to corporate-enforced policies. Inspired by Linux Caffeine.
 
+NoSleep is sleep-mode aware: it detects whether your machine uses classic (S1–S3) or Modern Standby (S0) sleep and adapts — see [Sleep modes](#sleep-modes-modern-standby-vs-classic).
+
 > **Note:** Windows PowerToys includes a tool called Awake that does the same thing, but PowerToys may require administrator privileges and is quite large. NoSleep aims to be as minimal as possible and runs without any extra permissions.
 
 ## Installation
@@ -17,7 +19,7 @@ scoop bucket add extras
 scoop install extras/nosleep
 ```
 
-Alternatively, you can download the latest release manually from [the releases page](https://github.com/CHerSun/NoSleep/releases/latest). Releases carry three executables:
+Alternatively, you can download the latest release manually from [the releases page](https://github.com/CHerSun/NoSleep/releases/latest). Each release carries three executables — pick just one:
 
 - **`NoSleep.exe`** — the default build for everyone (runs on .NET Framework 4.8, preinstalled on Windows).
 - **`NoSleep-net8.exe`** / **`NoSleep-net10.exe`** — single-file builds for users who already have the .NET 8 or .NET 10 runtime.
@@ -50,30 +52,33 @@ NoSleep.exe --lang list      # show the available languages
 
 To make the choice permanent, add the flag to the target of your NoSleep shortcut.
 
-### Behavior Matrix
-
-| Enabled | Keep Screen On | System Behavior                          | Display Behavior |
-| ------- | -------------- | ---------------------------------------- | ---------------- |
-| ✅ On   | ✅ On          | Sleep is prevented                       | Always on        |
-| ✅ On   | ⬜ Off         | Sleep is prevented                       | Can turn off     |
-| ⬜ Off  | Any            | Normal system behavior (sleep may occur) | Can turn off     |
-
 ## Requirements
 
 - **`NoSleep.exe`** (default): .NET Framework 4.8 or later — typically preinstalled on Windows 10 and later; if needed, downloadable from [Microsoft](https://dotnet.microsoft.com/en-us/download/dotnet-framework).
-- **`NoSleep-net8.exe` / `NoSleep-net10.exe`**: the respective .NET runtime installed.
+- **`NoSleep-net8.exe`** / **`NoSleep-net10.exe`**: the respective .NET runtime installed.
 
 ## How It Works
 
-NoSleep calls the `SetThreadExecutionState` function every 10 seconds, resetting Windows' display and idle timers. This process uses negligible CPU and only a small amount of RAM. The compiled binary includes icons (about 180 KB) and the core code.
+NoSleep keeps the system awake by re-asserting a Windows power request every 10 seconds (`SetThreadExecutionState`) — negligible CPU and a small amount of RAM; the compiled binary includes the icons (about 180 KB) and the core code. On Modern Standby machines, NoSleep additionally applies the S0-specific protections described in [Sleep modes](#sleep-modes-modern-standby-vs-classic).
 
 ## Sleep modes (Modern Standby vs classic)
 
 Windows machines sleep in one of two ways, and NoSleep shows which one applies in the first line of the tray menu. You can check yours with `powercfg /a` in a terminal.
 
-**Classic (S3)** — the traditional sleep. While NoSleep is enabled, sleep is prevented entirely, including manually triggered sleep (power menu, power button, lid close): the machine only *appears* to sleep, while it keeps running. This is the behavior NoSleep has always had.
+**What NoSleep can prevent while it is enabled:**
 
-**Modern Standby (S0)** — the newer model used by most recent laptops. Here Windows deliberately terminates what apps ask for when *you* explicitly request sleep, so NoSleep cannot simply veto it. Two additional options cover the common cases:
+| Event | Classic (S3) | Modern Standby (S0) | S0 on battery |
+| --- | --- | --- | --- |
+| Automatic sleep | ✅ Prevented | ✅ Prevented | ✅ Prevented — until sleep timeout + 5 min<br>✔ Indefinite (Simulate activity) |
+| Screen turning off | ✅ Prevented (Keep screen on) | ✅ Prevented (Keep screen on) | ✅ Prevented (Keep screen on) |
+| Sleep on lid close | ✅ Prevented | ✔ Can prevent (Block sleep on lid close) | ✔ Can prevent (Block sleep on lid close) |
+| Sleep via power menu / button | ✅ Prevented | — | — |
+
+*✅ = prevented by default · ✔ = can be prevented with an option · — = not targeted. The table shows the effective (enabled) state — when NoSleep is disabled, or app monitoring is active and no watched app is running, Windows behaves normally. The lid is the only manual-sleep trigger NoSleep overrides — covering the sleep button too is intentionally out of scope.*
+
+**Classic (S3)** — the traditional sleep. While NoSleep is enabled, sleep is prevented entirely, including manually triggered sleep — the machine only *appears* to sleep, while it keeps running. This is the behavior NoSleep has always had.
+
+**Modern Standby (S0)** — the newer model used by most recent laptops. Here Windows deliberately terminates what apps ask for when *you* explicitly request sleep, so NoSleep cannot simply veto it. Two additional options (both off by default) cover the gaps:
 
 - **Block sleep on lid close** — while NoSleep is enabled, it temporarily sets the lid action to "Do nothing" and restores your original setting when it is disabled or exits (also automatically restored on the next launch if NoSleep was killed). Closing the lid then leaves the machine running with the screen off — exactly like an external monitor setup.
 - **Simulate activity** — how NoSleep fights sleep triggers that power requests cannot cover on Modern Standby:
@@ -97,7 +102,7 @@ The full investigation behind these behaviors (with measurements on real S3 and 
 
 | Usage          | Icon & Source                                                                                  | License                  | Artist                                                                      |
 | -------------- | ---------------------------------------------------------------------------------------------- | ------------------------ | --------------------------------------------------------------------------- |
-| Enabled state  | [Coffee icon](https://www.iconarchive.com/show/food-icons-by-martin-berube/coffee-icon.html)   | Freeware                 | [Martin Berube](https://www.iconarchive.com/artist/martin-berube.html)      |
+| Enabled state  | [Coffee icon](https://www.iconarchive.com/show/food-icons-by-martin-berube/coffee-icon.html)   | Freeware                 | [Martin Berube](https://www.iconarchive.com/artist-martin-berube.html)      |
 | Disabled state | [Sleep icon](https://www.iconarchive.com/show/material-icons-by-pictogrammers/sleep-icon.html) (black; white recolor for dark taskbars) | Apache 2.0 (Open Source) | [Pictogrammers Team](https://www.iconarchive.com/artist/pictogrammers.html) |
 
 Many thanks to the artists for these icons!
