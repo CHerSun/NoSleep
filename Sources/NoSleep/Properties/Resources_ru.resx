@@ -86,6 +86,15 @@
   <data name="TrayMenu_KeepScreenOn" xml:space="preserve">
     <value>Держать экран включенным</value>
   </data>
+  <data name="TrayMenu_SleepModeClassic" xml:space="preserve">
+    <value>Режим сна: классический (S3)</value>
+  </data>
+  <data name="TrayMenu_SleepModeModern" xml:space="preserve">
+    <value>Режим сна: Modern Standby (S0)</value>
+  </data>
+  <data name="TrayMenu_SleepModeUnknown" xml:space="preserve">
+    <value>Режим сна: не определен (классическое поведение)</value>
+  </data>
   <data name="Tooltip_Autostart" xml:space="preserve">
     <value>Запускать при входе в систему?</value>
   </data>
@@ -100,6 +109,42 @@
   </data>
   <data name="Tooltip_KeepScreenOn" xml:space="preserve">
     <value>Держать ли дисплей всегда включённым в дополнение к системе.</value>
+  </data>
+  <data name="TrayMenu_BlockLidSleep" xml:space="preserve">
+    <value>Не давать уснуть при закрытии крышки</value>
+  </data>
+  <data name="Tooltip_BlockLidSleep" xml:space="preserve">
+    <value>Пока NoSleep препятствует сну, закрытие крышки не усыпит машину. Исходное действие крышки восстанавливается при отключении или выходе из NoSleep.</value>
+  </data>
+  <data name="TrayMenu_SimulateActivity" xml:space="preserve">
+    <value>Имитация активности</value>
+  </data>
+  <data name="TrayMenu_SimulateActivityOff" xml:space="preserve">
+    <value>Выключено</value>
+  </data>
+  <data name="TrayMenu_SimulateActivityPrevent" xml:space="preserve">
+    <value>Препятствовать попыткам сна</value>
+  </data>
+  <data name="TrayMenu_SimulateActivityPresence" xml:space="preserve">
+    <value>Имитировать присутствие пользователя</value>
+  </data>
+  <data name="TrayMenu_SimulateActivityReal" xml:space="preserve">
+    <value>Двигать мышью (заметно)</value>
+  </data>
+  <data name="Tooltip_SimulateActivity" xml:space="preserve">
+    <value>Как NoSleep борется с триггерами сна, не покрываемыми запросами питания. Побочные эффекты — в README.</value>
+  </data>
+  <data name="Tooltip_SimulateActivityOff" xml:space="preserve">
+    <value>Никакой имитации активности — только запросы питания.</value>
+  </data>
+  <data name="Tooltip_SimulateActivityPrevent" xml:space="preserve">
+    <value>Реагировать коротким всплеском активности на каждую попытку системы уснуть.</value>
+  </data>
+  <data name="Tooltip_SimulateActivityPresence" xml:space="preserve">
+    <value>Непрерывная невидимая активность: вы всегда «на месте», курсор не двигается. Работает и на батарее.</value>
+  </data>
+  <data name="Tooltip_SimulateActivityReal" xml:space="preserve">
+    <value>Непрерывное реальное движение курсора (каждый раз возвращается на место). Самый сильный режим; вы всегда выглядит активным.</value>
   </data>
   <data name="Msg_InstanceRunning" xml:space="preserve">
     <value>Экземпляр {0} уже запущен.</value>

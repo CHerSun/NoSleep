@@ -138,5 +138,77 @@ namespace NoSleep.Properties {
                 return ((int)(this["WatchAppsIntervalMs"]));
             }
         }
+
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool BlockLidSleep {
+            get {
+                return ((bool)(this["BlockLidSleep"]));
+            }
+            set {
+                this["BlockLidSleep"] = value;
+            }
+        }
+
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool LidOverrideArmed {
+            get {
+                return ((bool)(this["LidOverrideArmed"]));
+            }
+            set {
+                this["LidOverrideArmed"] = value;
+            }
+        }
+
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string LidOverrideSnapshot {
+            get {
+                return ((string)(this["LidOverrideSnapshot"]));
+            }
+            set {
+                this["LidOverrideSnapshot"] = value;
+            }
+        }
+
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public int SimulateActivity {
+            get {
+                return ((int)(this["SimulateActivity"]));
+            }
+            set {
+                this["SimulateActivity"] = value;
+            }
+        }
+
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("10000")]
+        public int JiggleIntervalMs {
+            get {
+                return ((int)(this["JiggleIntervalMs"]));
+            }
+            set {
+                this["JiggleIntervalMs"] = value;
+            }
+        }
+
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("20")]
+        public int JiggleJitterPercent {
+            get {
+                return ((int)(this["JiggleJitterPercent"]));
+            }
+            set {
+                this["JiggleJitterPercent"] = value;
+            }
+        }
     }
 }

@@ -145,6 +145,15 @@
   <data name="TrayMenu_KeepScreenOn" xml:space="preserve">
     <value>Keep screen on</value>
   </data>
+  <data name="TrayMenu_SleepModeClassic" xml:space="preserve">
+    <value>Sleep mode: Classic (S3)</value>
+  </data>
+  <data name="TrayMenu_SleepModeModern" xml:space="preserve">
+    <value>Sleep mode: Modern Standby (S0)</value>
+  </data>
+  <data name="TrayMenu_SleepModeUnknown" xml:space="preserve">
+    <value>Sleep mode: unknown (classic behavior)</value>
+  </data>
   <data name="Tooltip_Autostart" xml:space="preserve">
     <value>Should we start when you log in?</value>
   </data>
@@ -159,6 +168,42 @@
   </data>
   <data name="Tooltip_KeepScreenOn" xml:space="preserve">
     <value>If display should be kept always on in addition to keeping the system on.</value>
+  </data>
+  <data name="TrayMenu_BlockLidSleep" xml:space="preserve">
+    <value>Block sleep on lid close</value>
+  </data>
+  <data name="Tooltip_BlockLidSleep" xml:space="preserve">
+    <value>While NoSleep prevents sleep, closing the lid will not put the machine to sleep. The original lid action is restored when NoSleep is disabled or exits.</value>
+  </data>
+  <data name="TrayMenu_SimulateActivity" xml:space="preserve">
+    <value>Simulate activity</value>
+  </data>
+  <data name="TrayMenu_SimulateActivityOff" xml:space="preserve">
+    <value>Off</value>
+  </data>
+  <data name="TrayMenu_SimulateActivityPrevent" xml:space="preserve">
+    <value>Prevent sleep attempts</value>
+  </data>
+  <data name="TrayMenu_SimulateActivityPresence" xml:space="preserve">
+    <value>Simulate user presence</value>
+  </data>
+  <data name="TrayMenu_SimulateActivityReal" xml:space="preserve">
+    <value>Move the mouse (visible)</value>
+  </data>
+  <data name="Tooltip_SimulateActivity" xml:space="preserve">
+    <value>How NoSleep fights sleep triggers that power requests cannot cover on Modern Standby. Side effects are described in the README.</value>
+  </data>
+  <data name="Tooltip_SimulateActivityOff" xml:space="preserve">
+    <value>No activity simulation - power requests only.</value>
+  </data>
+  <data name="Tooltip_SimulateActivityPrevent" xml:space="preserve">
+    <value>React with a short burst of activity whenever the system tries to sleep.</value>
+  </data>
+  <data name="Tooltip_SimulateActivityPresence" xml:space="preserve">
+    <value>Continuous invisible activity: you always appear present, the cursor never moves. Also works on battery.</value>
+  </data>
+  <data name="Tooltip_SimulateActivityReal" xml:space="preserve">
+    <value>Continuous real cursor movement (returns to its place each time). The strongest option; you always appear active.</value>
   </data>
   <data name="Msg_InstanceRunning" xml:space="preserve">
     <value>{0} instance is already running.</value>

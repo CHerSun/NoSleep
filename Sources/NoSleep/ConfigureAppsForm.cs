@@ -49,16 +49,17 @@ namespace NoSleep
                 mainForm.WatchedApps.Remove(item);
         }
 
+        // Render helper only - state changes go through the main form's settings properties.
         private void UpdateEnabledState(bool enabled)
         {
             labelWatchState.Text = enabled ? Strings.Btn_AppsWatchingEnabled : Strings.Btn_AppsWatchingDisabled;
             labelWatchState.ForeColor = enabled ? Color.DarkGreen : Color.Firebrick;
             buttonEnable.Text = enabled ? Strings.Btn_Disable : Strings.Btn_Enable;
-            mainForm.UserWatchingEnabled = enabled;
         }
         private void ButtonEnable_Click(object sender, EventArgs e)
         {
-            UpdateEnabledState(!mainForm.UserWatchingEnabled);
+            mainForm.UserWatchingEnabled = !mainForm.UserWatchingEnabled;
+            UpdateEnabledState(mainForm.UserWatchingEnabled);
         }
 
         private void DataGridViewApps_SelectionChanged(object sender, EventArgs e)
