@@ -36,8 +36,8 @@ namespace NoSleep
         public bool EffectivePreventSleep => UserEnabled && (!WatchingActive || _monitor.AnyRunning);
 
         /// <summary> True when the lid override is wanted but the power APIs refused it while
-        /// prevention was active (Modern Standby only). </summary>
-        public bool LidOverrideFailed => _backend is ModernStandbyBackend ms && ms.LidOverrideFailed;
+        /// prevention was active. </summary>
+        public bool LidOverrideFailed => _backend.LidOverrideFailed;
 
         /// <summary> Raised on the UI thread after every state transition. </summary>
         public event EventHandler StateChanged;

@@ -92,7 +92,8 @@ namespace NoSleep
             }
         }
         /// <summary> Whether closing the lid must not put the machine to sleep while prevention
-        /// is active (Modern Standby + lid only; hidden otherwise). </summary>
+        /// is active (any machine with a lid, both sleep modes; lid-less machines show a
+        /// disabled "No lid detected" line instead of this item). </summary>
         public bool UserBlockLidSleep
         {
             get => Settings.Default.BlockLidSleep;
@@ -105,9 +106,9 @@ namespace NoSleep
                 _controller.SetBlockLidSleep(value);
             }
         }
-        /// <summary> Activity simulation mode: 0 = off, 1 = prevent sleep attempts,
-        /// 2 = simulate user presence (invisible), 3 = move the mouse (visible).
-        /// (Modern Standby only; hidden otherwise.) Persisted as an int; invalid hand-edited
+        /// <summary> Activity simulation mode: 0 = off, 1 = prevent sleep attempts (Modern
+        /// Standby only; away mode covers every classic trigger), 2 = simulate user presence
+        /// (invisible), 3 = move the mouse (visible). Persisted as an int; invalid hand-edited
         /// values fall back to Off. </summary>
         public int UserSimulateActivity
         {
@@ -185,17 +186,20 @@ namespace NoSleep
                 ? (ISleepBackend)new ModernStandbyBackend(Settings.Default.RefreshIntervalMs,
                                                            Settings.Default.JiggleIntervalMs,
                                                            Settings.Default.JiggleJitterPercent)
-                : new ExecutionStateBackend(Settings.Default.RefreshIntervalMs);
+                : new ExecutionStateBackend(Settings.Default.RefreshIntervalMs,
+                                            Settings.Default.JiggleIntervalMs,
+                                            Settings.Default.JiggleJitterPercent);
             _controller = new SleepController(backend, _appMonitor);
             _controller.StateChanged += (s, e) => RefreshFromState();
 
-            // Apply initial state. Order matters only in that SetUserEnabled/SyncWatching below
-            // gate the app scanner (optimistic while off - see AppMonitor); Apply evaluates.
+            // Apply initial state. The null guards mean "the capability exists on this machine"
+            // (lid override needs a lid); activity simulation works everywhere. Order matters only
+            // in that SetUserEnabled/SyncWatching below gate the app scanner (optimistic while off
+            // - see AppMonitor); Apply evaluates.
             _controller.SetKeepScreenOn(Settings.Default.DisplayRequired);
             if (_menuItem_BlockLidSleep != null)
                 _controller.SetBlockLidSleep(Settings.Default.BlockLidSleep);
-            if (_menuItem_SimulateActivity != null)
-                _controller.SetActivity(ValidatedActivity());
+            _controller.SetActivity(ValidatedActivity());
             // BEHAVIOR: initial Enabled state depends on the user preference for persistence between restarts.
             _controller.SetUserEnabled(!Settings.Default.SaveEnabledState || Settings.Default.EnabledState);
             SyncWatching();
@@ -251,8 +255,11 @@ namespace NoSleep
             };
             _menuItem_DisplayRequired.Click += Click_DisplayRequired;
 
-            // "Block sleep on lid close" exists only where it does something: Modern Standby + a lid.
-            if (PowerPlatform.SleepMode == SleepMode.ModernStandby && PowerPlatform.LidPresent)
+            // "Block sleep on lid close" exists wherever it does something: on a lid, in both
+            // sleep modes (the power-scheme write is sleep-mode-agnostic). Lid-less machines get
+            // a disabled placeholder instead, so the option's absence explains itself and the
+            // menu shape stays the same on every device.
+            if (PowerPlatform.LidPresent)
             {
                 _menuItem_BlockLidSleep = new ToolStripMenuItem(Strings.TrayMenu_BlockLidSleep)
                 {
@@ -261,29 +268,39 @@ namespace NoSleep
                 };
                 _menuItem_BlockLidSleep.Click += Click_BlockLidSleep;
             }
-
-            // Activity simulation submenu exists on every Modern Standby machine (no lid needed).
-            // Each choice carries its own short tooltip; the parent item only points to the README.
-            if (PowerPlatform.SleepMode == SleepMode.ModernStandby)
+            var lidItem = _menuItem_BlockLidSleep ?? new ToolStripMenuItem(Strings.TrayMenu_NoLidDetected)
             {
-                _sub_SimulateActivity[0] = new ToolStripMenuItem(Strings.TrayMenu_SimulateActivityOff)
-                { ToolTipText = Strings.Tooltip_SimulateActivityOff };
+                Enabled = false, // grayed on purpose: a real capability failure, not an app state
+                ToolTipText = Strings.Tooltip_NoLidDetected
+            };
+
+            // Activity simulation: the continuous presence modes are plain SendInput and work
+            // on any machine; the event-driven "prevent sleep attempts" mode only exists on
+            // Modern Standby, where sleep triggers survive power requests. The parent tooltip
+            // states the why (the S0 battery cliff being the killer case); each choice carries
+            // its own short descriptive tooltip.
+            _sub_SimulateActivity[0] = new ToolStripMenuItem(Strings.TrayMenu_SimulateActivityOff)
+            { ToolTipText = Strings.Tooltip_SimulateActivityOff };
+            if (PowerPlatform.SleepMode == SleepMode.ModernStandby)
                 _sub_SimulateActivity[1] = new ToolStripMenuItem(Strings.TrayMenu_SimulateActivityPrevent)
                 { ToolTipText = Strings.Tooltip_SimulateActivityPrevent };
-                _sub_SimulateActivity[2] = new ToolStripMenuItem(Strings.TrayMenu_SimulateActivityPresence)
-                { ToolTipText = Strings.Tooltip_SimulateActivityPresence };
-                _sub_SimulateActivity[3] = new ToolStripMenuItem(Strings.TrayMenu_SimulateActivityReal)
-                { ToolTipText = Strings.Tooltip_SimulateActivityReal };
-                for (int mode = 0; mode < _sub_SimulateActivity.Length; mode++)
-                {
-                    int captured = mode; // closure per item
-                    _sub_SimulateActivity[mode].Click += (s, e) => UserSimulateActivity = captured;
-                }                _menuItem_SimulateActivity = new ToolStripMenuItem(Strings.TrayMenu_SimulateActivity)
-                {
-                    ToolTipText = Strings.Tooltip_SimulateActivity
-                };
-                _menuItem_SimulateActivity.DropDownItems.AddRange(_sub_SimulateActivity);
+            _sub_SimulateActivity[2] = new ToolStripMenuItem(Strings.TrayMenu_SimulateActivityPresence)
+            { ToolTipText = Strings.Tooltip_SimulateActivityPresence };
+            _sub_SimulateActivity[3] = new ToolStripMenuItem(Strings.TrayMenu_SimulateActivityReal)
+            { ToolTipText = Strings.Tooltip_SimulateActivityReal };
+            for (int mode = 0; mode < _sub_SimulateActivity.Length; mode++)
+            {
+                if (_sub_SimulateActivity[mode] == null)
+                    continue;
+                int captured = mode; // closure per item
+                _sub_SimulateActivity[mode].Click += (s, e) => UserSimulateActivity = captured;
             }
+            _menuItem_SimulateActivity = new ToolStripMenuItem(Strings.TrayMenu_SimulateActivity)
+            {
+                ToolTipText = Strings.Tooltip_SimulateActivity
+            };
+            _menuItem_SimulateActivity.DropDownItems.AddRange(
+                _sub_SimulateActivity.Where(item => item != null).ToArray());
 
             // Sleep-mode indicator: non-interactive info line at the very top (issue #8).
             // The mode cannot change without a reboot, so the text is fixed for the run.
@@ -298,22 +315,24 @@ namespace NoSleep
                 Margin = new Padding(8, 4, 8, 4)
             });
 
-            // Initialize context menu with created items
+            // Initialize context menu with created items. Order: the sleep-mode indicator,
+            // then the sleep-behavior options (lid first - the most sleep-mode-coupled one,
+            // and its disabled "No lid detected" placeholder then sits at the group's edge),
+            // then app watching as its own group, then app lifecycle settings with the master
+            // switch closing the actable region, and Close under the final separator.
             _trayIcon.ContextMenuStrip = new ContextMenuStrip();
             _trayIcon.ContextMenuStrip.Items.Add(modeIndicator);
             _trayIcon.ContextMenuStrip.Items.Add(new ToolStripSeparator());
-            _trayIcon.ContextMenuStrip.Items.Add(_menuItem_AutoStart);
+            _trayIcon.ContextMenuStrip.Items.Add(lidItem);
             _trayIcon.ContextMenuStrip.Items.Add(_menuItem_DisplayRequired);
-            if (_menuItem_BlockLidSleep != null)
-                _trayIcon.ContextMenuStrip.Items.Add(_menuItem_BlockLidSleep);
-            if (_menuItem_SimulateActivity != null)
-                _trayIcon.ContextMenuStrip.Items.Add(_menuItem_SimulateActivity);
-            _trayIcon.ContextMenuStrip.Items.Add(_menuItem_RememberEnabledState);
+            _trayIcon.ContextMenuStrip.Items.Add(_menuItem_SimulateActivity);
             _trayIcon.ContextMenuStrip.Items.Add(new ToolStripSeparator());
             _trayIcon.ContextMenuStrip.Items.Add(_menuItem_ConfigureApps);
             _trayIcon.ContextMenuStrip.Items.Add(new ToolStripSeparator());
+            _trayIcon.ContextMenuStrip.Items.Add(_menuItem_AutoStart);
+            _trayIcon.ContextMenuStrip.Items.Add(_menuItem_RememberEnabledState);
             _trayIcon.ContextMenuStrip.Items.Add(_menuItem_Enabled);
-            _trayIcon.ContextMenuStrip.Items.Add(_menuItem_RememberEnabledState); // grouped with "Enabled"
+            _trayIcon.ContextMenuStrip.Items.Add(new ToolStripSeparator());
             _trayIcon.ContextMenuStrip.Items.Add(_MenuItem_Close);
         }
 
@@ -340,9 +359,9 @@ namespace NoSleep
                 // must never disable the item - the setting applies on the next enable.
                 _menuItem_BlockLidSleep.Enabled = !_controller.BlockLidSleep || !_controller.LidOverrideFailed;
             }
-            if (_menuItem_SimulateActivity != null)
+            for (int mode = 0; mode < _sub_SimulateActivity.Length; mode++)
             {
-                for (int mode = 0; mode < _sub_SimulateActivity.Length; mode++)
+                if (_sub_SimulateActivity[mode] != null) // slot 1 is S0-only and null elsewhere
                     _sub_SimulateActivity[mode].Checked = (int)_controller.Activity == mode;
             }
 

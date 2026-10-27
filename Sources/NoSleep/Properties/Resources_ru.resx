@@ -93,7 +93,7 @@
     <value>Режим сна: Modern Standby (S0)</value>
   </data>
   <data name="TrayMenu_SleepModeUnknown" xml:space="preserve">
-    <value>Режим сна: не определен (классическое поведение)</value>
+    <value>Режим сна: не определен</value>
   </data>
   <data name="Tooltip_Autostart" xml:space="preserve">
     <value>Запускать при входе в систему?</value>
@@ -102,10 +102,10 @@
     <value>Запоминать состояние между перезапусками?</value>
   </data>
   <data name="Tooltip_ConfigureApps" xml:space="preserve">
-    <value>Настройте программы, при работе которых экран не будет гаснуть.</value>
+    <value>Препятствовать сну, пока запущена хотя бы одна из этих программ.</value>
   </data>
   <data name="Tooltip_Enabled" xml:space="preserve">
-    <value>Включено ли прямо сейчас?</value>
+    <value>Должен ли NoSleep препятствовать сну?</value>
   </data>
   <data name="Tooltip_KeepScreenOn" xml:space="preserve">
     <value>Держать ли дисплей всегда включённым в дополнение к системе.</value>
@@ -114,7 +114,13 @@
     <value>Не давать уснуть при закрытии крышки</value>
   </data>
   <data name="Tooltip_BlockLidSleep" xml:space="preserve">
-    <value>Пока NoSleep препятствует сну, закрытие крышки не усыпит машину. Исходное действие крышки восстанавливается при отключении или выходе из NoSleep.</value>
+    <value>Пока NoSleep препятствует сну, закрытие крышки не усыпит машину.&#13;Исходное действие крышки восстанавливается при отключении или выходе из NoSleep.</value>
+  </data>
+  <data name="TrayMenu_NoLidDetected" xml:space="preserve">
+    <value>Крышка не обнаружена</value>
+  </data>
+  <data name="Tooltip_NoLidDetected" xml:space="preserve">
+    <value>Опция доступна только на устройствах с крышкой (ноутбуках).</value>
   </data>
   <data name="TrayMenu_SimulateActivity" xml:space="preserve">
     <value>Имитация активности</value>
@@ -132,19 +138,19 @@
     <value>Двигать мышью (заметно)</value>
   </data>
   <data name="Tooltip_SimulateActivity" xml:space="preserve">
-    <value>Как NoSleep борется с триггерами сна, не покрываемыми запросами питания. Побочные эффекты — в README.</value>
+    <value>Помогает препятствовать сну, пользователь выглядит активным.&#13;Опция необходима при Modern Standby на батарее.</value>
   </data>
   <data name="Tooltip_SimulateActivityOff" xml:space="preserve">
-    <value>Никакой имитации активности — только запросы питания.</value>
+    <value>Никакой имитации активности.</value>
   </data>
   <data name="Tooltip_SimulateActivityPrevent" xml:space="preserve">
     <value>Реагировать коротким всплеском активности на каждую попытку системы уснуть.</value>
   </data>
   <data name="Tooltip_SimulateActivityPresence" xml:space="preserve">
-    <value>Непрерывная невидимая активность: вы всегда «на месте», курсор не двигается. Работает и на батарее.</value>
+    <value>Непрерывная невидимая активность: вы всегда «на месте», курсор не двигается.&#13;Работает и на батарее.</value>
   </data>
   <data name="Tooltip_SimulateActivityReal" xml:space="preserve">
-    <value>Непрерывное реальное движение курсора (каждый раз возвращается на место). Самый сильный режим; вы всегда выглядит активным.</value>
+    <value>Непрерывное реальное движение курсора (каждый раз возвращается на место).&#13;Самый сильный режим.</value>
   </data>
   <data name="Msg_InstanceRunning" xml:space="preserve">
     <value>Экземпляр {0} уже запущен.</value>

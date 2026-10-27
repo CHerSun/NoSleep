@@ -33,8 +33,8 @@ NoSleep is designed to be "set and forget". Once running, it sits in the Windows
 
   - **Autostart at login** – Start NoSleep automatically when you log in.
   - **Keep screen on** – Prevent the display from turning off while NoSleep is enabled.
-  - **Block sleep on lid close** *(Modern Standby laptops only; off by default)* – While NoSleep is enabled, closing the lid does not put the machine to sleep; the original lid action is restored when NoSleep is disabled or exits. (Available since v1.6.0)
-  - **Simulate activity** *(Modern Standby machines only; off by default)* – See [Sleep modes](#sleep-modes-modern-standby-vs-classic). (Available since v1.6.0)
+  - **Block sleep on lid close** *(laptops — machines with a lid; off by default)* – While NoSleep is enabled, closing the lid does not put the machine to sleep; the original lid action is restored when NoSleep is disabled or exits. On machines without a lid the menu shows a disabled "No lid detected" line instead. (Available since v1.6.0; on classic-sleep laptops since v1.7.0)
+  - **Simulate activity** *(off by default)* – Simulated user input: the continuous modes keep you "active" on any machine; on Modern Standby they (and the *Prevent sleep attempts* mode) also fight sleep triggers that power requests cannot cover. See [Sleep modes](#sleep-modes-modern-standby-vs-classic). (Available since v1.6.0; on classic-sleep machines since v1.7.0)
   - **Remember enabled state** – Save the enabled state between application restarts.
   - **Configure apps to monitor** – Define a list of applications. If none of them are running, NoSleep automatically disables itself; if any monitored app is running, NoSleep enables itself and prevents sleep. This dynamic behavior only works when NoSleep is enabled by the user. (Available since v1.4.0)
 
@@ -59,7 +59,7 @@ To make the choice permanent, add the flag to the target of your NoSleep shortcu
 
 ## How It Works
 
-NoSleep keeps the system awake by re-asserting a Windows power request every 10 seconds (`SetThreadExecutionState`) — negligible CPU and a small amount of RAM; the compiled binary includes the icons (about 180 KB) and the core code. On Modern Standby machines, NoSleep additionally applies the S0-specific protections described in [Sleep modes](#sleep-modes-modern-standby-vs-classic).
+NoSleep keeps the system awake by re-asserting a Windows power request every 10 seconds (`SetThreadExecutionState`) — negligible CPU and a small amount of RAM; the compiled binary includes the icons (about 180 KB) and the core code. NoSleep also detects your machine's sleep mode and capabilities (lid present or not) and offers the matching extra options described in [Sleep modes](#sleep-modes-modern-standby-vs-classic).
 
 ## Sleep modes (Modern Standby vs classic)
 
@@ -70,24 +70,24 @@ Windows machines sleep in one of two ways, and NoSleep shows which one applies i
 | Event | Classic (S3) | Modern Standby (S0) | S0 on battery |
 | --- | --- | --- | --- |
 | Automatic sleep | ✅ Prevented | ✅ Prevented | ✅ Prevented — until sleep timeout + 5 min<br>✔ Indefinite (Simulate activity) |
-| Screen turning off | ✅ Prevented (Keep screen on) | ✅ Prevented (Keep screen on) | ✅ Prevented (Keep screen on) |
+| Screen turning off | ✔ Can prevent (Keep screen on · Simulate activity) | ✔ Can prevent (Keep screen on · Simulate activity) | ✔ Can prevent (Keep screen on · Simulate activity) |
 | Sleep on lid close | ✅ Prevented | ✔ Can prevent (Block sleep on lid close) | ✔ Can prevent (Block sleep on lid close) |
 | Sleep via power menu / button | ✅ Prevented | — | — |
 
 *✅ = prevented by default · ✔ = can be prevented with an option · — = not targeted. The table shows the effective (enabled) state — when NoSleep is disabled, or app monitoring is active and no watched app is running, Windows behaves normally. The lid is the only manual-sleep trigger NoSleep overrides — covering the sleep button too is intentionally out of scope.*
 
-**Classic (S3)** — the traditional sleep. While NoSleep is enabled, sleep is prevented entirely, including manually triggered sleep — the machine only *appears* to sleep, while it keeps running. This is the behavior NoSleep has always had.
+**Classic (S3)** — the traditional sleep. While NoSleep is enabled, sleep is prevented entirely, including manually triggered sleep — the machine only *appears* to sleep, while it keeps running. This is the behavior NoSleep has always had. The options below are available here too: **Block sleep on lid close** replaces the "appears to sleep" state with a plain "do nothing", and the continuous activity modes add presence simulation (sleep itself is already fully covered on classic, battery included).
 
-**Modern Standby (S0)** — the newer model used by most recent laptops. Here Windows deliberately terminates what apps ask for when *you* explicitly request sleep, so NoSleep cannot simply veto it. Two additional options (both off by default) cover the gaps:
+**Modern Standby (S0)** — the newer model used by most recent laptops. Here Windows deliberately terminates what apps ask for when *you* explicitly request sleep, so NoSleep cannot simply veto it. Two additional options (both off by default, both also present on classic machines per above) cover the S0 gaps:
 
 - **Block sleep on lid close** — while NoSleep is enabled, it temporarily sets the lid action to "Do nothing" and restores your original setting when it is disabled or exits (also automatically restored on the next launch if NoSleep was killed). Closing the lid then leaves the machine running with the screen off — exactly like an external monitor setup.
 - **Simulate activity** — how NoSleep fights sleep triggers that power requests cannot cover on Modern Standby:
-  - *Prevent sleep attempts* — best-effort: when the system tries to sleep (sleep button, power menu), NoSleep reacts with a short burst of simulated input that aims to wake it right back up. You may briefly appear "active" in chats for a moment. For lid close, prefer the deterministic **Block sleep on lid close** option above.
-  - *Simulate user presence* — NoSleep continuously simulates invisible user activity (input events that move nothing — the cursor never moves), preventing **automatic** sleep. **Side effects:** you appear permanently active (chats never idle), and the screen and your session never lock on their own.
+  - *Prevent sleep attempts* (Modern Standby only) — best-effort: when the system tries to sleep (sleep button, power menu), NoSleep reacts with a short burst of simulated input that aims to wake it right back up. You may briefly appear "active" in chats for a moment. For lid close, prefer the deterministic **Block sleep on lid close** option above.
+  - *Simulate user presence* — NoSleep continuously simulates invisible user activity (input events that move nothing — the cursor never moves), preventing **automatic** sleep. On classic machines this is presence simulation only (sleep needs no help there). **Side effects:** you appear permanently active (chats never idle), and the screen and your session never lock on their own.
   - *Move the mouse (visible)* — same purpose as presence simulation, but with real, visible mouse movement (the cursor returns to its place each time) — for systems where invisible activity is not enough.
   - The continuous modes run at a randomized cadence (so the events are not a perfectly periodic pattern); advanced users can tune it via the `JiggleIntervalMs` / `JiggleJitterPercent` values in the standard settings file (defaults: 10 seconds, ±20%).
 
-> ⚠️ **Laptop safety — overheating risk.** Everything above (and NoSleep itself) exists to keep a machine awake. A laptop that stays awake inside a closed bag or sleeve cannot cool itself: it can overheat, drain its battery, and in the worst case damage itself or nearby items. This risk is inherent to *any* keep-awake tool — including NoSleep's classic S3 behavior, where closing the lid has never meant the machine actually sleeps. For that reason **both Modern Standby options are off by default**: nothing changes on your system until you explicitly opt in. NoSleep also restores every system setting it changed the moment it is disabled or exits, and repairs a leftover lid override on the next launch. Make it a habit: before a laptop goes into a bag, glance at the tray — the coffee icon means it will stay awake — and disable NoSleep.
+> ⚠️ **Laptop safety — overheating risk.** Everything above (and NoSleep itself) exists to keep a machine awake. A laptop that stays awake inside a closed bag or sleeve cannot cool itself: it can overheat, drain its battery, and in the worst case damage itself or nearby items. This risk is inherent to *any* keep-awake tool — including NoSleep's classic S3 behavior, where closing the lid has never meant the machine actually sleeps. For that reason **both lid/activity options are off by default**: nothing changes on your system until you explicitly opt in. NoSleep also restores every system setting it changed the moment it is disabled or exits, and repairs a leftover lid override on the next launch. Make it a habit: before a laptop goes into a bag, glance at the tray — the coffee icon means it will stay awake — and disable NoSleep.
 
 **Honest limits on Modern Standby:**
 
