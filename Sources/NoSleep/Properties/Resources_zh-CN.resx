@@ -93,7 +93,7 @@
     <value>睡眠模式：新式待机 (S0)</value>
   </data>
   <data name="TrayMenu_SleepModeUnknown" xml:space="preserve">
-    <value>睡眠模式：未知（按传统方式工作）</value>
+    <value>睡眠模式：未知</value>
   </data>
   <data name="Tooltip_Autostart" xml:space="preserve">
     <value>是否在登录时自动启动?</value>
@@ -102,10 +102,10 @@
     <value>是否在重启之间记住启用状态?</value>
   </data>
   <data name="Tooltip_ConfigureApps" xml:space="preserve">
-    <value>配置应用程序,当其运行时保持屏幕常亮。</value>
+    <value>当这些程序中的任意一个正在运行时阻止睡眠。</value>
   </data>
   <data name="Tooltip_Enabled" xml:space="preserve">
-    <value>当前是否已启用?</value>
+    <value>NoSleep 是否应阻止睡眠?</value>
   </data>
   <data name="Tooltip_KeepScreenOn" xml:space="preserve">
     <value>在保持系统运行的基础上,是否同时保持显示器常亮。</value>
@@ -114,7 +114,13 @@
     <value>合盖时阻止睡眠</value>
   </data>
   <data name="Tooltip_BlockLidSleep" xml:space="preserve">
-    <value>当 NoSleep 正在阻止睡眠时，合上盖子不会使设备进入睡眠。禁用或退出 NoSleep 时会恢复原来的盖子动作。</value>
+    <value>当 NoSleep 正在阻止睡眠时，合上盖子不会使设备进入睡眠。&#13;禁用或退出 NoSleep 时会恢复原来的盖子动作。</value>
+  </data>
+  <data name="TrayMenu_NoLidDetected" xml:space="preserve">
+    <value>未检测到盖子</value>
+  </data>
+  <data name="Tooltip_NoLidDetected" xml:space="preserve">
+    <value>此选项仅适用于带盖子的设备（笔记本电脑）。</value>
   </data>
   <data name="TrayMenu_SimulateActivity" xml:space="preserve">
     <value>模拟活动</value>
@@ -132,10 +138,10 @@
     <value>移动鼠标（可见）</value>
   </data>
   <data name="Tooltip_SimulateActivity" xml:space="preserve">
-    <value>NoSleep 如何应对电源请求无法覆盖的睡眠触发。副作用见 README。</value>
+    <value>帮助阻止睡眠,并让您显示为活跃。新式待机设备使用电池时必备。</value>
   </data>
   <data name="Tooltip_SimulateActivityOff" xml:space="preserve">
-    <value>不模拟活动——仅使用电源请求。</value>
+    <value>不模拟活动。</value>
   </data>
   <data name="Tooltip_SimulateActivityPrevent" xml:space="preserve">
     <value>每当系统尝试睡眠时，以短暂的活动爆发作出反应。</value>
@@ -144,7 +150,7 @@
     <value>持续不可见的活动：始终显示在线，光标不动。电池下同样有效。</value>
   </data>
   <data name="Tooltip_SimulateActivityReal" xml:space="preserve">
-    <value>持续的真实光标移动（每次都会回到原位）。最强的模式；您将始终显示为活跃。</value>
+    <value>持续的真实光标移动（每次都会回到原位）。最强的模式。</value>
   </data>
   <data name="Msg_InstanceRunning" xml:space="preserve">
     <value>{0} 实例已在运行。</value>

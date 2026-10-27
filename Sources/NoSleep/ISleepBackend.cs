@@ -24,10 +24,13 @@ namespace NoSleep
         /// <summary> Keep the display on as well (existing "Keep screen on" setting). </summary>
         public bool KeepDisplayOn { get; set; }
 
-        /// <summary> Override the lid-close action to "Do nothing" (Modern Standby only). </summary>
+        /// <summary> Override the lid-close action to "Do nothing". The scheme write is
+        /// sleep-mode-agnostic; the UI gates the setting on a lid being present. </summary>
         public bool BlockLidSleep { get; set; }
 
-        /// <summary> Activity simulation mode (Modern Standby only). </summary>
+        /// <summary> Activity simulation mode. The continuous presence modes are honored by
+        /// both backends; the event-driven PreventSleepAttempts mode is Modern Standby only
+        /// (classic sleep has no trigger left to fight - away mode covers them all). </summary>
         public ActivityMode Activity { get; set; }
     }
 
@@ -44,5 +47,9 @@ namespace NoSleep
 
         /// <summary> Release everything this backend has asserted. </summary>
         void Disarm();
+
+        /// <summary> True only when the lid override is wanted but the power APIs refused it
+        /// while prevention was active. </summary>
+        bool LidOverrideFailed { get; }
     }
 }

@@ -152,7 +152,7 @@
     <value>Sleep mode: Modern Standby (S0)</value>
   </data>
   <data name="TrayMenu_SleepModeUnknown" xml:space="preserve">
-    <value>Sleep mode: unknown (classic behavior)</value>
+    <value>Sleep mode: unknown</value>
   </data>
   <data name="Tooltip_Autostart" xml:space="preserve">
     <value>Should we start when you log in?</value>
@@ -161,10 +161,10 @@
     <value>Should we remember the enabled state between restarts?</value>
   </data>
   <data name="Tooltip_ConfigureApps" xml:space="preserve">
-    <value>Configure apps to keep the screen on when they are running.</value>
+    <value>Prevent sleep while any of these apps is running.</value>
   </data>
   <data name="Tooltip_Enabled" xml:space="preserve">
-    <value>Are we enabled right now?</value>
+    <value>Should NoSleep prevent sleep?</value>
   </data>
   <data name="Tooltip_KeepScreenOn" xml:space="preserve">
     <value>If display should be kept always on in addition to keeping the system on.</value>
@@ -173,7 +173,13 @@
     <value>Block sleep on lid close</value>
   </data>
   <data name="Tooltip_BlockLidSleep" xml:space="preserve">
-    <value>While NoSleep prevents sleep, closing the lid will not put the machine to sleep. The original lid action is restored when NoSleep is disabled or exits.</value>
+    <value>While NoSleep prevents sleep, closing the lid will not put the machine to sleep.&#13;&#10;The original lid action is restored when NoSleep is disabled or exits.</value>
+  </data>
+  <data name="TrayMenu_NoLidDetected" xml:space="preserve">
+    <value>No lid detected</value>
+  </data>
+  <data name="Tooltip_NoLidDetected" xml:space="preserve">
+    <value>The lid option is available on devices with a lid (laptops).</value>
   </data>
   <data name="TrayMenu_SimulateActivity" xml:space="preserve">
     <value>Simulate activity</value>
@@ -191,19 +197,19 @@
     <value>Move the mouse (visible)</value>
   </data>
   <data name="Tooltip_SimulateActivity" xml:space="preserve">
-    <value>How NoSleep fights sleep triggers that power requests cannot cover on Modern Standby. Side effects are described in the README.</value>
+    <value>Helps to prevent sleep and makes you appear active.&#13;&#10;A must for Modern Standby on battery.</value>
   </data>
   <data name="Tooltip_SimulateActivityOff" xml:space="preserve">
-    <value>No activity simulation - power requests only.</value>
+    <value>No activity simulation.</value>
   </data>
   <data name="Tooltip_SimulateActivityPrevent" xml:space="preserve">
     <value>React with a short burst of activity whenever the system tries to sleep.</value>
   </data>
   <data name="Tooltip_SimulateActivityPresence" xml:space="preserve">
-    <value>Continuous invisible activity: you always appear present, the cursor never moves. Also works on battery.</value>
+    <value>Continuous invisible activity: you always appear present, the cursor never moves.&#13;&#10;Also works on battery.</value>
   </data>
   <data name="Tooltip_SimulateActivityReal" xml:space="preserve">
-    <value>Continuous real cursor movement (returns to its place each time). The strongest option; you always appear active.</value>
+    <value>Continuous real cursor movement (returns to its place each time).&#13;&#10;The strongest option.</value>
   </data>
   <data name="Msg_InstanceRunning" xml:space="preserve">
     <value>{0} instance is already running.</value>

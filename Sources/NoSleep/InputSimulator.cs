@@ -66,11 +66,10 @@ namespace NoSleep
 
         /// <summary>
         /// Zero-delta mouse move: a real input event (resets idle timers, counts as activity,
-        /// acts as a wake source) that moves the pointer nowhere - the "zen" jiggle popularized
-        /// by MouseJiggler; proven to keep Modern Standby systems awake while being fully
-        /// invisible to the user.
+        /// acts as a wake source) that moves the pointer nowhere - fully invisible to the
+        /// user, proven to keep Modern Standby systems awake.
         /// </summary>
-        public static void ZenMove()
+        public static void ZeroDeltaMove()
         {
             INPUT[] input = new INPUT[1];
             input[0].type = InputMouse;

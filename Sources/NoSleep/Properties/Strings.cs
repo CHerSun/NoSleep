@@ -123,6 +123,8 @@ namespace NoSleep.Properties
         internal static string Tooltip_Enabled => Get("Tooltip_Enabled");
         internal static string Tooltip_KeepScreenOn => Get("Tooltip_KeepScreenOn");
         internal static string Tooltip_BlockLidSleep => Get("Tooltip_BlockLidSleep");
+        internal static string TrayMenu_NoLidDetected => Get("TrayMenu_NoLidDetected");
+        internal static string Tooltip_NoLidDetected => Get("Tooltip_NoLidDetected");
         internal static string Tooltip_SimulateActivity => Get("Tooltip_SimulateActivity");
         internal static string Tooltip_SimulateActivityOff => Get("Tooltip_SimulateActivityOff");
         internal static string Tooltip_SimulateActivityPrevent => Get("Tooltip_SimulateActivityPrevent");
