@@ -96,8 +96,6 @@ Windows machines sleep in one of two ways, and NoSleep shows which one applies i
 
 If you never need NoSleep's dynamic behavior, setting the lid action to "Do nothing" yourself (Power Options → Choose what closing the lid does) achieves the same without any tool — NoSleep's advantage is that it is tied to one click and reverts automatically.
 
-The full investigation behind these behaviors (with measurements on real S3 and S0 hardware) lives in [`tools/sleep-mode/`](tools/sleep-mode/) in the repository.
-
 ## Icons Attribution
 
 | Usage          | Icon & Source                                                                                  | License                  | Artist                                                                      |
